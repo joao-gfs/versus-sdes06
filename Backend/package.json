@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "prisma:migrate": "dotenv -- pnpm prisma migrate dev",
+    "prisma:studio": "dotenv -- pnpm prisma studio"
   },
   "keywords": [],
   "author": "",
@@ -17,6 +19,7 @@
     "express": "^5.1.0"
   },
   "devDependencies": {
+    "dotenv-cli": "^11.0.0",
     "nodemon": "^3.1.10",
     "prisma": "^6.18.0"
   }
