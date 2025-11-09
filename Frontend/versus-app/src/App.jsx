@@ -5,7 +5,7 @@ function App() {
 
   return (
     <>
-      <h1 className='text-center'>Versus</h1>
+      <h1 className='text-center text-versus-grey'>Versus</h1>
     </>
   )
 }
