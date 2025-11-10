@@ -137,3 +137,9 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Prisma generated client (do not commit generated Prisma client)
+Backend/src/generated/
+Backend/src/generated/**
+# Prisma native engines inside node_modules (already covered by node_modules/, but explicit here)
+Backend/node_modules/.prisma/
