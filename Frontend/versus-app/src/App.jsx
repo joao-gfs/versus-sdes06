@@ -8,8 +8,7 @@ import ProtectedRoute from './components/common/ProtectedRoute'; // O "Gatekeepe
 
 function App() {
   return (
-    <div>
-      <main className="container mx-auto p-4">
+    <div className="mx-auto">
         <Routes>
           {/* --- Rotas Públicas --- */}
           <Route path="/login" element={<LoginPage />} />
@@ -24,7 +23,6 @@ function App() {
             } 
           />
         </Routes>
-      </main>
     </div>
   );
 }
