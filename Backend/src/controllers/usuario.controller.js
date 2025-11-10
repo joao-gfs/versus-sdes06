@@ -31,8 +31,9 @@ const handleCreateUsuario = async (req, res) => {
 
 const handleLogin = async (req, res) => {
   try {
-    const { email, senha } = req.body || {};
-    const result = await usuarioService.authenticateUsuario({ email, senha });
+    const { email, senha, password } = req.body || {};
+    // Accept both 'senha' and 'password' for compatibility
+    const result = await usuarioService.authenticateUsuario({ email, senha, password });
     res.status(200).json(result);
   } catch (error) {
     const status = error.statusCode || 400;
