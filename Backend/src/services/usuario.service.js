@@ -116,11 +116,11 @@ const authenticateUsuario = async (payload) => {
   // Accept both 'senha' (Portuguese) and 'password' (English) for flexibility
   const passwordValue = senha || password;
   
-  if (!email || !emailRegex.test(email)) throw new ServiceError('Email inválido');
-  if (!passwordValue || !passwordRegex.test(passwordValue)) throw new ServiceError('Senha inválida. Mínimo 8 caracteres, pelo menos letras e números');
+  if (!email || !emailRegex.test(email)) throw new ServiceError('Email ou senha inválidos');
+  if (!passwordValue || !passwordRegex.test(passwordValue)) throw new ServiceError('Email ou senha inválidos');
 
   const user = await prisma.usuario.findUnique({ where: { email: email.toLowerCase().trim() } });
-  if (!user) throw new ServiceError('Credenciais inválidas', 401);
+  if (!user) throw new ServiceError('Email ou senha inválidos', 401);
 
   // check lock
   const now = new Date();
@@ -138,7 +138,7 @@ const authenticateUsuario = async (payload) => {
       data.lockedUntil = lockUntil;
     }
     await prisma.usuario.update({ where: { id: user.id }, data });
-    throw new ServiceError('Credenciais inválidas', 401);
+    throw new ServiceError('Email ou senha inválidos', 401);
   }
 
   // successful login: reset failedAttempts and lockedUntil, update last login if needed

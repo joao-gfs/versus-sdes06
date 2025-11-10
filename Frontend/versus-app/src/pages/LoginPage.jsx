@@ -26,7 +26,7 @@ function LoginPage() {
       login(user, token);
       navigate('/');
     } catch (err) {
-      setError(err.message || 'Email ou senha inválidos.');
+      setError(err.message || 'Email ou senha inválidos');
     } finally {
       setLoading(false);
     }
@@ -71,11 +71,12 @@ function LoginPage() {
           </div>
 
           {error && (
-            <p className="text-sm text-center text-red-500">{error}</p>
+            <p className="text-sm text-center text-red-500" id='error'>{error}</p>
           )}
 
           <div>
             <Button
+              id='login-button'
               type="submit"
               disabled={loading}
               variant="default"
