@@ -5,11 +5,135 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+// Models mapped to your existing SQL tables (names/columns follow your script.sql)
+model Usuario {
+  id        Int              @id @default(autoincrement())
+  nome      String
+  email     String           @unique
+  senhaHash String           @map("senha_hash")
+  status    String           @default("ativo")
+  createdAt DateTime         @default(now()) @map("created_at")
+  updatedAt DateTime         @updatedAt     @map("updated_at")
+  // failed login attempts and lock timestamp
+  failedAttempts Int        @map("failed_attempts") @default(0)
+  lockedUntil    DateTime?  @map("locked_until")
+
+  perfis    PerfilUsuario[]
+
+  @@map("usuario")
+}
+
+model Organizacao {
+  id         Int       @id @default(autoincrement())
+  nome       String    @unique
+  cnpj       String    @unique
+  responsavel String
+  telefone   String? 
+  email      String?
+  endereco   String?   // mapped from TEXT
+  status     String    @default("ativo")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt     @map("updated_at")
+
+  equipes   Equipe[]
+  torneios  Torneio[]
+  perfis    PerfilUsuario[]
+
+  @@map("organizacao")
+}
+
+model Equipe {
+  id            Int         @id @default(autoincrement())
+  nome          String
+  organizacaoId Int?        @map("organizacao_id")
+  status        String      @default("ativo")
+  telefone      String?
+  email         String?
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt     @map("updated_at")
+
+  organizacao Organizacao?  @relation(fields: [organizacaoId], references: [id])
+  atletas      Atleta[]
+  torneios     TorneioEquipe[]
+  perfis       PerfilUsuario[]
+
+  @@map("equipe")
+}
+
+model Atleta {
+  id           Int      @id @default(autoincrement())
+  equipeId     Int      @map("equipe_id")
+  nome         String
+  dataNascimento DateTime @map("data_nascimento")
+  documento    String?  @unique
+  posicao      String?
+  numeroCamisa Int?     @map("numero_camisa")
+  status       String   @default("ativo")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt     @map("updated_at")
+
+  equipe Equipe @relation(fields: [equipeId], references: [id])
+
+  @@map("atleta")
+}
+
+model Torneio {
+  id            Int       @id @default(autoincrement())
+  organizacaoId Int       @map("organizacao_id")
+  nome          String
+  edicao        String
+  categoria     String?
+  formato       String?
+  criteriosDesempate String? @map("criterios_desempate")
+  capacidadeMaxima Int?    @map("capacidade_maxima")
+  dataInicio    DateTime? @map("data_inicio")
+  dataFim       DateTime? @map("data_fim")
+  status        String   @default("em configuração")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt     @map("updated_at")
+
+  organizacao Organizacao @relation(fields: [organizacaoId], references: [id])
+  equipes     TorneioEquipe[]
+
+  @@unique([nome, edicao, organizacaoId], name: "torneio_unico")
+  @@map("torneio")
+}
+
+model TorneioEquipe {
+  id        Int     @id @default(autoincrement())
+  torneioId Int     @map("torneio_id")
+  equipeId  Int     @map("equipe_id")
+  status    String  @default("inscrita")
+
+  torneio Torneio @relation(fields: [torneioId], references: [id])
+  equipe  Equipe  @relation(fields: [equipeId], references: [id])
+
+  @@unique([torneioId, equipeId], name: "equipe_unica_por_torneio")
+  @@map("torneio_equipe")
+}
+
+model PerfilUsuario {
+  id            Int      @id @default(autoincrement())
+  usuarioId     Int      @map("usuario_id")
+  // The DB column is a VARCHAR with a CHECK constraint (no Postgres enum type),
+  // so store papel as String and enforce allowed values in application logic.
+  papel         String   @db.VarChar(10)
+  organizacaoId Int?     @map("organizacao_id")
+  equipeId      Int?     @map("equipe_id")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  usuario      Usuario    @relation(fields: [usuarioId], references: [id])
+  organizacao  Organizacao? @relation(fields: [organizacaoId], references: [id])
+  equipe       Equipe?     @relation(fields: [equipeId], references: [id])
+
+  @@unique([usuarioId, papel], name: "usuario_papel_unico")
+  @@map("perfil_usuario")
 }
