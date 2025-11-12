@@ -226,7 +226,7 @@ function CreateUserPage() {
               <SelectTrigger id="role">
                 <SelectValue placeholder="Selecione o papel do usuário" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-background">
                 {availableRoles.map((r) => (
                   <SelectItem key={r} value={r}>
                     {roleLabels[r]}
