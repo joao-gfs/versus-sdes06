@@ -1,5 +1,6 @@
 const prisma = require('../lib/prisma');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 // Simple validators
 const emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
@@ -105,18 +106,21 @@ const createUsuario = async (payload, requester = {}) => {
 
 /**
  * Authenticate a user (RFS01.2)
- * payload: { email, senha }
+ * payload: { email, senha } or { email, password }
  * Business rules:
  * - block login after 4 failed attempts (lock for 15 minutes)
- * - return user with profiles and vinculos on success
+ * - return user with profiles, vinculos and JWT token on success
  */
 const authenticateUsuario = async (payload) => {
-  const { email, senha } = payload || {};
-  if (!email || !emailRegex.test(email)) throw new ServiceError('Email inválido');
-  if (!senha || !passwordRegex.test(senha)) throw new ServiceError('Senha inválida. Mínimo 8 caracteres, pelo menos letras e números');
+  const { email, senha, password } = payload || {};
+  // Accept both 'senha' (Portuguese) and 'password' (English) for flexibility
+  const passwordValue = senha || password;
+  
+  if (!email || !emailRegex.test(email)) throw new ServiceError('Email ou senha inválidos');
+  if (!passwordValue || !passwordRegex.test(passwordValue)) throw new ServiceError('Email ou senha inválidos');
 
   const user = await prisma.usuario.findUnique({ where: { email: email.toLowerCase().trim() } });
-  if (!user) throw new ServiceError('Credenciais inválidas', 401);
+  if (!user) throw new ServiceError('Email ou senha inválidos', 401);
 
   // check lock
   const now = new Date();
@@ -124,7 +128,7 @@ const authenticateUsuario = async (payload) => {
     throw new ServiceError('Conta bloqueada devido a múltiplas tentativas. Tente mais tarde.', 403);
   }
 
-  const match = await bcrypt.compare(senha, user.senhaHash);
+  const match = await bcrypt.compare(passwordValue, user.senhaHash);
   if (!match) {
     // increment failedAttempts; if reaches 4, set lock for 15 minutes
     const attempts = (user.failedAttempts || 0) + 1;
@@ -134,7 +138,7 @@ const authenticateUsuario = async (payload) => {
       data.lockedUntil = lockUntil;
     }
     await prisma.usuario.update({ where: { id: user.id }, data });
-    throw new ServiceError('Credenciais inválidas', 401);
+    throw new ServiceError('Email ou senha inválidos', 401);
   }
 
   // successful login: reset failedAttempts and lockedUntil, update last login if needed
@@ -149,9 +153,28 @@ const authenticateUsuario = async (payload) => {
   // build permissions/vinculos structure
   const vinculos = perfis.map(p => ({ papel: p.papel, organizacao: p.organizacao ?? null, equipe: p.equipe ?? null }));
 
+  // Generate JWT token
+  const jwtSecret = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+  const token = jwt.sign(
+    { 
+      userId: user.id, 
+      email: user.email,
+      perfis: vinculos.map(v => v.papel) // Include roles in token
+    },
+    jwtSecret,
+    { expiresIn: '24h' } // Token expires in 24 hours
+  );
+
   return {
-    usuario: { id: user.id, nome: user.nome, email: user.email, status: user.status, createdAt: user.createdAt },
+    user: { 
+      id: user.id, 
+      nome: user.nome, 
+      email: user.email, 
+      status: user.status, 
+      createdAt: user.createdAt 
+    },
     perfis: vinculos,
+    token,
   };
 };
 
