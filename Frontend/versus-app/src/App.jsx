@@ -1,28 +1,29 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route } from "react-router-dom";
 
-import LoginPage from './pages/LoginPage';
-import HomePage from './pages/HomePage';
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+import HomePage from "./pages/HomePage";
 
 // Componentes de Layout
-import ProtectedRoute from './components/common/ProtectedRoute'; // O "Gatekeeper"
+import ProtectedRoute from "./components/common/ProtectedRoute"; // O "Gatekeeper"
 
 function App() {
   return (
     <div className="mx-auto">
-        <Routes>
-          {/* --- Rotas Públicas --- */}
-          <Route path="/login" element={<LoginPage />} />
-          {/* <Route path="/register" element={<RegisterPage />} /> */}
+      <Routes>
+        {/* --- Rotas Públicas --- */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
 
-          <Route 
-            path="/" 
-            element={
-              <ProtectedRoute>
-                <HomePage />
-              </ProtectedRoute>
-            } 
-          />
-        </Routes>
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <HomePage />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
     </div>
   );
 }

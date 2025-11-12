@@ -1,3 +1,5 @@
+import InfoCard from "../components/ui/InfoCard"
+
 function HomePage() {
   return (
     <div>
@@ -5,8 +7,12 @@ function HomePage() {
       <p className="text-lg">
         This is a public page accessible to all users. Feel free to explore!
       </p>
+
+      <div className="mt-6">
+        <InfoCard />
+      </div>
     </div>
-  );
+  )
 }
 
-export default HomePage;
+export default HomePage

@@ -1,49 +1,60 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { loginUser } from '../api/authApi';
+import { registerUser } from '../api/authApi';
 
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 
-function LoginPage() {
+function RegisterPage() {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
-    setLoading(true);
 
+    if (password !== confirmPassword) {
+      setError('As senhas não coincidem');
+      return;
+    }
+
+    setLoading(true);
     try {
-      const { user, token } = await loginUser({ email, password });
-      login(user, token);
-      navigate('/');
+      await registerUser({ name, email, password });
+      // redireciona para login após cadastro com sucesso
+      navigate('/login', { state: { registered: true } });
     } catch (err) {
-      setError(err.message || 'Email ou senha inválidos');
+      setError(err.message || 'Falha no registro');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-
     <div className="flex items-center justify-center min-h-screen border-versus-yellow bg-versus-background">
-      
       <div className="w-full max-w-sm p-8 space-y-6 bg-card text-card-foreground rounded-lg shadow-lg border">
-        
-        <h2 className="text-4xl font-bold text-center text-versus-yellow">
-          Versus Login
-        </h2>
-        
+        <h2 className="text-3xl font-bold text-center text-versus-yellow">Criar Conta</h2>
+
         <form onSubmit={handleSubmit} className="space-y-6">
-          
+          <div className="space-y-2">
+            <Label htmlFor="name">Nome</Label>
+            <Input
+              id="name"
+              type="text"
+              required
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Seu nome completo"
+            />
+          </div>
+
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input
@@ -65,29 +76,37 @@ function LoginPage() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
+              autoComplete="new-password"
+              placeholder="••••••••"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="confirmPassword">Confirmar Senha</Label>
+            <Input
+              id="confirmPassword"
+              type="password"
+              required
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              autoComplete="new-password"
               placeholder="••••••••"
             />
           </div>
 
           {error && (
-            <p className="text-sm text-center text-red-500" id='error'>{error}</p>
+            <p className="text-sm text-center text-red-500" id="error">{error}</p>
           )}
 
           <div>
-            <Button
-              id='login-button'
-              type="submit"
-              disabled={loading}
-              variant="default"
-              className="w-full font-bold"
-            >
-              {loading ? 'Entrando...' : 'Entrar'}
+            <Button type="submit" disabled={loading} variant="default" className="w-full font-bold">
+              {loading ? 'Cadastrando...' : 'Criar conta'}
             </Button>
           </div>
+
           <div className="text-center text-sm">
-            <span>Ainda não tem conta? </span>
-            <Link to="/register" className="text-versus-yellow font-medium underline">Criar conta</Link>
+            <span>Já tem uma conta? </span>
+            <Link to="/login" className="text-versus-yellow font-medium underline">Entrar</Link>
           </div>
         </form>
       </div>
@@ -95,4 +114,4 @@ function LoginPage() {
   );
 }
 
-export default LoginPage;
+export default RegisterPage;
