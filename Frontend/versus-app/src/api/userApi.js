@@ -27,3 +27,21 @@ export const createUser = async (userData, requester) => {
     throw new Error(error.response?.data?.error || 'Falha ao criar usuário');
   }
 };
+
+/**
+ * Lista usuários ativos (para seleção em formulários)
+ * @param {object} filters - filtros opcionais (nome)
+ * @returns {Promise<Array>}
+ */
+export const listUsers = async (filters = {}) => {
+  try {
+    const params = {};
+    if (filters.nome) params.nome = filters.nome;
+
+    const response = await api.get('/usuarios', { params });
+    return response.data;
+  } catch (error) {
+    console.error('Erro ao listar usuários:', error.response?.data || error.message);
+    throw new Error(error.response?.data?.error || 'Falha ao listar usuários');
+  }
+};

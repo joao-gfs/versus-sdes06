@@ -6,6 +6,7 @@ import {
   getOrganizacaoById,
   updateOrganizacao,
 } from '../api/organizacaoApi';
+import { listUsers } from '../api/userApi';
 
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -30,6 +31,9 @@ function OrganizacaoFormPage() {
   const [endereco, setEndereco] = useState('');
   const [status, setStatus] = useState('ATIVO');
 
+  const [usuarios, setUsuarios] = useState([]);
+  const [loadingUsuarios, setLoadingUsuarios] = useState(false);
+
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -46,12 +50,30 @@ function OrganizacaoFormPage() {
     }
   }, [hasRole, navigate]);
 
+  // Carregar usuários ao montar o componente
+  useEffect(() => {
+    loadUsuarios();
+  }, []);
+
   // Carregar dados da organização se estiver em modo de edição
   useEffect(() => {
     if (isEditMode) {
       loadOrganizacao();
     }
   }, [id, isEditMode]);
+
+  const loadUsuarios = async () => {
+    setLoadingUsuarios(true);
+    try {
+      const data = await listUsers();
+      setUsuarios(data);
+    } catch (err) {
+      console.error('Falha ao carregar usuários:', err);
+      // Não mostra erro para o usuário, apenas registra no console
+    } finally {
+      setLoadingUsuarios(false);
+    }
+  };
 
   const loadOrganizacao = async () => {
     setLoadingData(true);
@@ -289,17 +311,24 @@ function OrganizacaoFormPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="responsavel">Responsável *</Label>
-              <Input
-                id="responsavel"
-                type="text"
-                required
-                value={responsavel}
-                onChange={(e) => setResponsavel(e.target.value)}
-                placeholder="Nome completo"
-                disabled={loading}
-              />
+              <Select 
+                value={responsavel} 
+                onValueChange={setResponsavel}
+                disabled={loading || loadingUsuarios}
+              >
+                <SelectTrigger id="responsavel">
+                  <SelectValue placeholder={loadingUsuarios ? "Carregando..." : "Selecione um responsável"} />
+                </SelectTrigger>
+                <SelectContent className="bg-background">
+                  {usuarios.map((usuario) => (
+                    <SelectItem key={usuario.id} value={usuario.nome}>
+                      {usuario.nome} ({usuario.email})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <p className="text-xs text-muted-foreground">
-                Nome do representante da organização
+                Usuário responsável pela organização
               </p>
             </div>
 
