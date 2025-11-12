@@ -87,3 +87,13 @@ const TableCell = React.forwardRef(({ className, ...props }, ref) => (
   />
 ))
 TableCell
+
+export {
+  Table,
+  TableHeader,
+  TableBody,
+  TableFooter,
+  TableRow,
+  TableHead,
+  TableCell,
+}
