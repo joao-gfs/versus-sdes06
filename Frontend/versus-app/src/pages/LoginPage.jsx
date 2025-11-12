@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { loginUser } from '../api/authApi';
 
@@ -22,8 +22,8 @@ function LoginPage() {
     setLoading(true);
 
     try {
-      const { user, token } = await loginUser({ email, password });
-      login(user, token);
+      const { user, token, perfis } = await loginUser({ email, password });
+      login(user, token, perfis);
       navigate('/');
     } catch (err) {
       setError(err.message || 'Email ou senha inválidos');
@@ -84,10 +84,6 @@ function LoginPage() {
             >
               {loading ? 'Entrando...' : 'Entrar'}
             </Button>
-          </div>
-          <div className="text-center text-sm">
-            <span>Ainda não tem conta? </span>
-            <Link to="/register" className="text-versus-yellow font-medium underline">Criar conta</Link>
           </div>
         </form>
       </div>

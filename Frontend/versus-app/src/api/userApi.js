@@ -1,16 +1,29 @@
-// src/services/userApi.js
-import api from './api'; // Importa a instância base
+import api from './axiosConfig';
 
 /**
- * Cria um novo usuário.
- * @param {object} usuarioData - Os dados do usuário a ser criado.
+ * Cria um novo usuário (requer autenticação)
+ * @param {object} userData - dados do usuário
+ * @param {object} requester - informações do solicitante (role, organizacaoId, equipeId)
+ * @returns {Promise<object>}
  */
-export const criarUsuario = async (usuarioData) => {
+export const createUser = async (userData, requester) => {
   try {
-    const response = await api.post('/createUser', usuarioData);
+    const payload = {
+      nome: userData.name,
+      email: userData.email,
+      senha: userData.password,
+      papel: userData.role,
+      organizacaoId: userData.organizacaoId ? parseInt(userData.organizacaoId) : undefined,
+      equipeId: userData.equipeId ? parseInt(userData.equipeId) : undefined,
+      requesterRole: requester.role,
+      requesterOrganizacaoId: requester.organizacaoId,
+      requesterEquipeId: requester.equipeId,
+    };
+
+    const response = await api.post('/usuarios/createUser', payload);
     return response.data;
   } catch (error) {
-    console.error('Erro ao criar usuário:', error.response?.data?.error || error.message);
-    throw error.response?.data || new Error(error.message);
+    console.error('Erro ao criar usuário:', error.response?.data || error.message);
+    throw new Error(error.response?.data?.error || 'Falha ao criar usuário');
   }
 };
