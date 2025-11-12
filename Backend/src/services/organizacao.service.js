@@ -42,7 +42,7 @@ const createOrganizacao = async (payload = {}) => {
   if (byCnpj) throw new ServiceError('Já existe uma organização com este CNPJ', 409);
 
   const created = await prisma.organizacao.create({
-    data: { nome, cnpj, responsavel, telefone, email, endereco: endereco || null, status: 'ativo' },
+    data: { nome, cnpj, responsavel, telefone, email, endereco: endereco || null, status: 'ATIVO' },
   });
   return created;
 };
@@ -55,8 +55,8 @@ const listOrganizacoes = async (filters = {}) => {
   const where = {};
   if (filters.nome) where.nome = { contains: String(filters.nome), mode: 'insensitive' };
   if (filters.responsavel) where.responsavel = { contains: String(filters.responsavel), mode: 'insensitive' };
-  if (filters.status && ['ativo', 'inativo'].includes(String(filters.status).toLowerCase())) {
-    where.status = String(filters.status).toLowerCase();
+  if (filters.status && ['ATIVO', 'INATIVO'].includes(String(filters.status).toUpperCase())) {
+    where.status = String(filters.status).toUpperCase();
   }
 
   let orderBy = { nome: 'asc' };
@@ -80,14 +80,14 @@ const getOrganizacaoById = async (id) => {
  * Editar organização (somente ADM)
  * id: number
  * payload: { nome?, responsavel?, telefone?, email?, endereco?, status? }
- * requester: { role }
+ * requesterRole: string - papel do usuário que está fazendo a requisição
  * Regras:
  * - Apenas ADM pode editar
  * - Nome só pode ser alterado se não houver torneios vinculados
  * - Status deve ser 'ativo' ou 'inativo'
  */
-const updateOrganizacao = async (id, payload = {}, requester = {}) => {
-  if (!requester || requester.role !== 'ADM') {
+const updateOrganizacao = async (id, payload = {}, requesterRole = '') => {
+  if (!requesterRole || requesterRole !== 'ADM') {
     throw new ServiceError('Apenas ADM pode editar organização', 403);
   }
 
@@ -115,8 +115,8 @@ const updateOrganizacao = async (id, payload = {}, requester = {}) => {
     data.endereco = v || null;
   }
   if (typeof payload.status !== 'undefined') {
-    const st = String(payload.status).toLowerCase();
-    if (!['ativo', 'inativo'].includes(st)) throw new ServiceError('Status inválido. Use "ativo" ou "inativo"');
+    const st = String(payload.status).toUpperCase();
+    if (!['ATIVO', 'INATIVO'].includes(st)) throw new ServiceError('Status inválido. Use "ATIVO" ou "INATIVO"');
     data.status = st;
   }
 
@@ -161,8 +161,8 @@ const deleteOrganizacao = async (id) => {
     return deleted;
   }
 
-  if (org.status === 'inativo') return org;
-  const updated = await prisma.organizacao.update({ where: { id: Number(id) }, data: { status: 'inativo' } });
+  if (org.status === 'INATIVO') return org;
+  const updated = await prisma.organizacao.update({ where: { id: Number(id) }, data: { status: 'INATIVO' } });
   return updated;
 };
 

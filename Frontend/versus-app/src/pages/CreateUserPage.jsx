@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { createUser } from '../api/userApi';
+import { listOrganizacoes } from '../api/organizacaoApi';
 
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -25,6 +26,8 @@ function CreateUserPage() {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [organizacoes, setOrganizacoes] = useState([]);
+  const [loadingOrganizacoes, setLoadingOrganizacoes] = useState(false);
 
   const { hasRole, hasAnyRole, getPrimaryRole, getOrganizacaoId, getEquipeId } = useAuth();
   const navigate = useNavigate();
@@ -36,6 +39,24 @@ function CreateUserPage() {
       navigate('/');
     }
   }, [hasAnyRole, navigate]);
+
+  // Carregar organizações ao montar o componente
+  useEffect(() => {
+    loadOrganizacoes();
+  }, []);
+
+  const loadOrganizacoes = async () => {
+    setLoadingOrganizacoes(true);
+    try {
+      const data = await listOrganizacoes({ status: 'ATIVO' });
+      setOrganizacoes(data);
+    } catch (err) {
+      console.error('Erro ao carregar organizações:', err);
+      setOrganizacoes([]);
+    } finally {
+      setLoadingOrganizacoes(false);
+    }
+  };
 
   const handleRoleChange = (value) => {
     setRole(value);
@@ -239,20 +260,38 @@ function CreateUserPage() {
           {/* Campo Organização - apenas para ORG */}
           {role === 'ORG' && (
             <div className="space-y-2">
-              <Label htmlFor="organizacao">
-                ID da Organização *
-              </Label>
-              <Input
-                id="organizacao"
-                type="number"
+              <Label htmlFor="organizacao">Organização *</Label>
+              <Select 
+                value={organizacaoId} 
+                onValueChange={setOrganizacaoId}
+                disabled={loadingOrganizacoes}
                 required
-                value={organizacaoId}
-                onChange={(e) => setOrganizacaoId(e.target.value)}
-                placeholder="Digite o ID da organização"
-                min="1"
-              />
+              >
+                <SelectTrigger id="organizacao">
+                  <SelectValue 
+                    placeholder={
+                      loadingOrganizacoes 
+                        ? "Carregando organizações..." 
+                        : "Selecione uma organização"
+                    } 
+                  />
+                </SelectTrigger>
+                <SelectContent className="bg-background">
+                  {organizacoes.length === 0 && !loadingOrganizacoes ? (
+                    <SelectItem value="0" disabled>
+                      Nenhuma organização ativa disponível
+                    </SelectItem>
+                  ) : (
+                    organizacoes.map((org) => (
+                      <SelectItem key={org.id} value={org.id.toString()}>
+                        {org.nome}
+                      </SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
               <p className="text-xs text-muted-foreground">
-                Digite o ID numérico da organização
+                Selecione a organização à qual o usuário será vinculado
               </p>
             </div>
           )}

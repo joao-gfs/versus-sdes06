@@ -51,6 +51,39 @@ function HomePage() {
             </CardFooter>
           </Card>
         )}
+
+        {/* Card de Organizações - apenas para ADM */}
+        {hasAnyRole(['ADM']) && (
+          <Card className="max-w-xl">
+            <CardHeader>
+              <CardTitle>Gerenciar Organizações</CardTitle>
+              <CardDescription>
+                Criar e gerenciar organizações esportivas
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                Gerencie federações, associações e clubes-matriz. Cada torneio e time 
+                deve estar vinculado a uma organização.
+              </p>
+              <ul className="mt-4 space-y-2 text-sm list-inside list-disc text-versus-grey">
+                <li>Cadastrar organizações com CNPJ</li>
+                <li>Consultar e filtrar organizações</li>
+                <li>Editar informações de contato</li>
+                <li>Gerenciar status (ativo/inativo)</li>
+              </ul>
+            </CardContent>
+            <CardFooter>
+              <Button 
+                variant="default" 
+                size="sm"
+                onClick={() => navigate('/organizacoes')}
+              >
+                Gerenciar Organizações
+              </Button>
+            </CardFooter>
+          </Card>
+        )}
       </div>
     </div>
   )

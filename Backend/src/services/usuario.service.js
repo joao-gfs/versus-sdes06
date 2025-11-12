@@ -178,7 +178,39 @@ const authenticateUsuario = async (payload) => {
   };
 };
 
+/**
+ * List all active users
+ * Returns a list of users that can be used for selection (e.g., as responsavel)
+ */
+const listUsuarios = async (filters = {}) => {
+  const where = {};
+  
+  // Only active users by default
+  where.status = 'ativo';
+  
+  // Optional name filter
+  if (filters.nome) {
+    where.nome = { contains: String(filters.nome), mode: 'insensitive' };
+  }
+  
+  const usuarios = await prisma.usuario.findMany({
+    where,
+    select: {
+      id: true,
+      nome: true,
+      email: true,
+      status: true,
+    },
+    orderBy: {
+      nome: 'asc',
+    },
+  });
+  
+  return usuarios;
+};
+
 module.exports = {
   createUsuario,
   authenticateUsuario,
+  listUsuarios,
 };

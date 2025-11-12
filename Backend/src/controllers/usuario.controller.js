@@ -41,7 +41,19 @@ const handleLogin = async (req, res) => {
   }
 };
 
+const handleListUsuarios = async (req, res) => {
+  try {
+    const { nome } = req.query || {};
+    const usuarios = await usuarioService.listUsuarios({ nome });
+    res.status(200).json(usuarios);
+  } catch (error) {
+    const status = error.statusCode || 400;
+    res.status(status).json({ error: error.message });
+  }
+};
+
 module.exports = {
   handleCreateUsuario,
   handleLogin,
+  handleListUsuarios,
 };
