@@ -29,7 +29,7 @@ function CreateUserPage() {
   const [organizacoes, setOrganizacoes] = useState([]);
   const [loadingOrganizacoes, setLoadingOrganizacoes] = useState(false);
 
-  const { hasRole, hasAnyRole, getPrimaryRole, getOrganizacaoId, getEquipeId } = useAuth();
+  const { user, hasRole, hasAnyRole, getPrimaryRole, getOrganizacaoId, getEquipeId } = useAuth();
   const navigate = useNavigate();
 
   // Verificar permissões ao carregar a página
@@ -129,6 +129,7 @@ function CreateUserPage() {
       };
 
       const requester = {
+        id: user?.id,
         role: getPrimaryRole(),
         organizacaoId: getOrganizacaoId(),
         equipeId: getEquipeId(),

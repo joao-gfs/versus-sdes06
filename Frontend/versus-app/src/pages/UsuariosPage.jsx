@@ -40,7 +40,7 @@ function UsuariosPage() {
   const { user, hasRole, getPrimaryRole, getOrganizacaoId, getEquipeId } = useAuth();
   const navigate = useNavigate();
 
-  // Verificar permissões ao carregar a página (Mantido ADM)
+  // Verificar permissões ao carregar a página
   useEffect(() => {
     const isAllowed = hasRole('ADM');
     if (!isAllowed) {
@@ -48,18 +48,18 @@ function UsuariosPage() {
     }
   }, [hasRole, navigate]);
 
-  // Carregar usuários ao montar o componente (depende do user)
+  // Carregar usuários ao montar o componente
   useEffect(() => {
-    // Só carrega se o usuário estiver disponível no context
     if (user) {
       loadUsuarios();
     }
-  }, [user]); // Depende do 'user' para ter o 'requester.role'
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Aplicar filtros e ordenação quando os dados ou filtros mudarem
   useEffect(() => {
     applyFilters();
-    // --- ALTERAÇÃO: Removido filtroResponsavel ---
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [usuarios, filtroNome, filtroStatus, ordenacao]);
 
   const loadUsuarios = async () => {
