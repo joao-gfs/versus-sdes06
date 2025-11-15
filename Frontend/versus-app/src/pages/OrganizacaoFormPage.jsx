@@ -252,15 +252,15 @@ function OrganizacaoFormPage() {
 
   if (loadingData) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-versus-background">
+      <div className="flex items-center justify-center py-12">
         <div className="text-xl text-muted-foreground">Carregando dados...</div>
       </div>
     );
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-versus-background p-4">
-      <div className="w-full max-w-3xl p-8 space-y-6 bg-card text-card-foreground rounded-lg shadow-lg border">
+    <div className="max-w-3xl mx-auto">
+      <div className="p-8 space-y-6 bg-card text-card-foreground rounded-lg shadow-lg border">
         <div>
           <h2 className="text-3xl font-bold text-versus-yellow">
             {isEditMode ? 'Editar Organização' : 'Nova Organização'}
