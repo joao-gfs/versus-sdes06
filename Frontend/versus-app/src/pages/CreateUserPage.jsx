@@ -175,8 +175,8 @@ function CreateUserPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-versus-background p-4">
-      <div className="w-full max-w-2xl p-8 space-y-6 bg-card text-card-foreground rounded-lg shadow-lg border">
+    <div className="max-w-2xl mx-auto">
+      <div className="p-8 space-y-6 bg-card text-card-foreground rounded-lg shadow-lg border">
         <div>
           <h2 className="text-3xl font-bold text-versus-yellow">Criar Novo Usuário</h2>
           <p className="text-sm text-muted-foreground mt-2">

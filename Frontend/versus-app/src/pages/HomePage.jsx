@@ -9,7 +9,7 @@ function HomePage() {
   const navigate = useNavigate();
 
   return (
-    <div>
+    <>
       <h1 className="text-3xl text-versus-yellow font-bold mb-4">
         Bem-vindo, {user?.nome || 'Usuário'}!
       </h1>
@@ -40,7 +40,7 @@ function HomePage() {
                 <li>Criar usuários Técnicos (ADM e ORG)</li>
               </ul>
             </CardContent>
-            <CardFooter>
+            <CardFooter className="flex gap-2">
               <Button 
                 variant="default" 
                 size="sm"
@@ -48,6 +48,15 @@ function HomePage() {
               >
                 Criar Novo Usuário
               </Button>
+              {hasAnyRole(['ADM']) && (
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => navigate('/usuarios')}
+                >
+                  Ver Todos os Usuários
+                </Button>
+              )}
             </CardFooter>
           </Card>
         )}
@@ -85,8 +94,8 @@ function HomePage() {
           </Card>
         )}
       </div>
-    </div>
-  )
+    </>
+  );
 }
 
 export default HomePage

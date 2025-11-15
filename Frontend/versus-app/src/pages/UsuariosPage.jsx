@@ -37,7 +37,7 @@ function UsuariosPage() {
   const [ordenacao, setOrdenacao] = useState('nome'); // 'nome' ou 'email'
 
   // --- ALTERAÇÃO: Pega o 'user' completo para o 'requester' ---
-  const { user, hasRole } = useAuth();
+  const { user, hasRole, getPrimaryRole, getOrganizacaoId, getEquipeId } = useAuth();
   const navigate = useNavigate();
 
   // Verificar permissões ao carregar a página (Mantido ADM)
@@ -73,7 +73,13 @@ function UsuariosPage() {
     try {
       // --- ALTERAÇÃO: Chama listUsers com o requester.role ---
       // Isso permite ao backend saber se deve (ADM) ou não enviar os inativos
-      const data = await listUsers({}, { role: user.role });
+      const requester = {
+        id: user.id,
+        role: getPrimaryRole(),
+        organizacaoId: getOrganizacaoId(),
+        equipeId: getEquipeId()
+      };
+      const data = await listUsers({}, requester);
       setUsuarios(data);
     } catch (err) {
       setError(err.message || 'Falha ao carregar usuários');
@@ -128,7 +134,13 @@ function UsuariosPage() {
     try {
       // --- ALTERAÇÃO: Chama updateUser para alterar o status ---
       // Passa o 'user' (do AuthContext) como o 'requester'
-      await updateUser(usuario.id, { status: newStatus }, user);
+      const requester = {
+        id: user.id,
+        role: getPrimaryRole(),
+        organizacaoId: getOrganizacaoId(),
+        equipeId: getEquipeId()
+      };
+      await updateUser(usuario.id, { status: newStatus }, requester);
       setSuccess(`Usuário ${actionText} com sucesso`);
       loadUsuarios(); // Recarregar lista
     } catch (err) {
@@ -156,31 +168,25 @@ function UsuariosPage() {
   };
 
   return (
-    <div className="min-h-screen bg-versus-background p-4">
-      <div className="max-w-7xl mx-auto space-y-6">
-        {/* Cabeçalho */}
-        <div className="flex justify-between items-center">
-          <div>
-            {/* --- ALTERAÇÃO: Títulos --- */}
-            <h1 className="text-4xl font-bold text-versus-yellow">Usuários</h1>
-            <p className="text-sm text-muted-foreground mt-2">
-              Gerencie os usuários do sistema
-            </p>
-          </div>
-          <div className="flex gap-2">
-            <Button onClick={() => navigate('/')}>
-              Voltar
-            </Button>
-            <Button
-              // --- ALTERAÇÃO: Rota e Texto ---
-              onClick={() => navigate('/usuarios/novo')}
-              variant="default"
-              className="font-bold"
-            >
-              + Novo Usuário
-            </Button>
-          </div>
+    <div className="space-y-6">
+      {/* Cabeçalho */}
+      <div className="flex justify-between items-center">
+        <div>
+          {/* --- ALTERAÇÃO: Títulos --- */}
+          <h1 className="text-4xl font-bold text-versus-yellow">Usuários</h1>
+          <p className="text-sm text-muted-foreground mt-2">
+            Gerencie os usuários do sistema
+          </p>
         </div>
+        <Button
+          // --- ALTERAÇÃO: Rota e Texto ---
+          onClick={() => navigate('/criar-usuario')}
+          variant="default"
+          className="font-bold"
+        >
+          + Novo Usuário
+        </Button>
+      </div>
 
         {/* Card de Filtros */}
         <div className="bg-card text-card-foreground p-6 rounded-lg shadow-lg border">
@@ -323,14 +329,13 @@ function UsuariosPage() {
           )}
         </div>
 
-        {/* Resumo */}
-        {!loading && (
-          <div className="text-sm text-muted-foreground text-center">
-            {/* --- ALTERAÇÃO: Texto --- */}
-            Mostrando {filteredUsuarios.length} de {usuarios.length} usuário(s)
-          </div>
-        )}
-      </div>
+      {/* Resumo */}
+      {!loading && (
+        <div className="text-sm text-muted-foreground text-center">
+          {/* --- ALTERAÇÃO: Texto --- */}
+          Mostrando {filteredUsuarios.length} de {usuarios.length} usuário(s)
+        </div>
+      )}
     </div>
   );
 }

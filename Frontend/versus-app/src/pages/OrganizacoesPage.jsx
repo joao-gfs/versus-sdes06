@@ -142,29 +142,23 @@ function OrganizacoesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-versus-background p-4">
-      <div className="max-w-7xl mx-auto space-y-6">
-        {/* Cabeçalho */}
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-4xl font-bold text-versus-yellow">Organizações</h1>
-            <p className="text-sm text-muted-foreground mt-2">
-              Gerencie as organizações esportivas do sistema
-            </p>
-          </div>
-          <div className="flex gap-2">
-            <Button onClick={() => navigate('/')}>
-              Voltar
-            </Button>
-            <Button
-              onClick={() => navigate('/organizacoes/nova')}
-              variant="default"
-              className="font-bold"
-            >
-              + Nova Organização
-            </Button>
-          </div>
+    <div className="space-y-6">
+      {/* Cabeçalho */}
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-4xl font-bold text-versus-yellow">Organizações</h1>
+          <p className="text-sm text-muted-foreground mt-2">
+            Gerencie as organizações esportivas do sistema
+          </p>
         </div>
+        <Button
+          onClick={() => navigate('/organizacoes/nova')}
+          variant="default"
+          className="font-bold"
+        >
+          + Nova Organização
+        </Button>
+      </div>
 
         {/* Card de Filtros */}
         <div className="bg-card text-card-foreground p-6 rounded-lg shadow-lg border">
@@ -309,13 +303,12 @@ function OrganizacoesPage() {
           )}
         </div>
 
-        {/* Resumo */}
-        {!loading && (
-          <div className="text-sm text-muted-foreground text-center">
-            Mostrando {filteredOrganizacoes.length} de {organizacoes.length} organização(ões)
-          </div>
-        )}
-      </div>
+      {/* Resumo */}
+      {!loading && (
+        <div className="text-sm text-muted-foreground text-center">
+          Mostrando {filteredOrganizacoes.length} de {organizacoes.length} organização(ões)
+        </div>
+      )}
     </div>
   );
 }

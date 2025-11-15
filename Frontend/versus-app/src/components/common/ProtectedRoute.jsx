@@ -1,10 +1,11 @@
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import Layout from './Layout';
 
 /**
  * Este componente verifica se o usuário está autenticado.
- * Se estiver, renderiza o componente filho (a página).
+ * Se estiver, renderiza o componente filho (a página) dentro do Layout com Header.
  * Se não, redireciona para a página de login.
  */
 const ProtectedRoute = ({ children }) => {
@@ -18,8 +19,8 @@ const ProtectedRoute = ({ children }) => {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // Se estiver autenticado, apenas renderiza a página solicitada
-  return children;
+  // Se estiver autenticado, renderiza a página dentro do Layout (com Header)
+  return <Layout>{children}</Layout>;
 };
 
 export default ProtectedRoute;

@@ -32,9 +32,10 @@ export const createUser = async (userData, requester) => {
 /**
  * Lista usuários ativos (para seleção em formulários)
  * @param {object} filters - filtros opcionais (nome)
+ * @param {object} requester - informações do solicitante (role)
  * @returns {Promise<Array>}
  */
-export const listUsers = async (filters = {}) => {
+export const listUsers = async (filters = {}, requester = {}) => {
   try {
     const params = {};
     if (filters.nome) params.nome = filters.nome;
