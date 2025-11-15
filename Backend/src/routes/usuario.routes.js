@@ -8,5 +8,7 @@ router.post('/createUser', usuarioController.handleCreateUsuario);
 router.post('/login', usuarioController.handleLogin);
 // GET /api/usuarios - lista usuários ativos (para seleção em formulários)
 router.get('/', usuarioController.handleListUsuarios);
+// PUT /api/usuarios/:id - atualiza dados do usuário
+router.put('/:id', usuarioController.handleUpdateUsuario);
 
 module.exports = router;
