@@ -87,7 +87,7 @@ function OrganizacoesPage() {
     }
 
     // Filtro por status
-    if (filtroStatus) {
+    if (filtroStatus && filtroStatus !== 'ALL') {
       filtered = filtered.filter((org) => org.status === filtroStatus);
     }
 
@@ -193,7 +193,7 @@ function OrganizacoesPage() {
                   <SelectValue placeholder="Todos" />
                 </SelectTrigger>
                 <SelectContent className="bg-background">
-                  <SelectItem value=" ">Todos</SelectItem>
+                  <SelectItem value="ALL">Todos</SelectItem>
                   <SelectItem value="ATIVO">Ativo</SelectItem>
                   <SelectItem value="INATIVO">Inativo</SelectItem>
                 </SelectContent>

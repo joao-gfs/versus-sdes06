@@ -102,7 +102,7 @@ function UsuariosPage() {
     // --- REMOVIDO: Filtro por responsável ---
 
     // Filtro por status
-    if (filtroStatus) {
+    if (filtroStatus && filtroStatus !== 'ALL') {
       filtered = filtered.filter((u) => u.status === filtroStatus);
     }
 
@@ -204,7 +204,6 @@ function UsuariosPage() {
               />
             </div>
 
-            {/* --- REMOVIDO: Filtro Responsável --- */}
 
             <div className="space-y-2">
               <Label htmlFor="filtroStatus">Status</Label>
@@ -214,7 +213,7 @@ function UsuariosPage() {
                 </SelectTrigger>
                 <SelectContent className="bg-background">
                     {/* --- ALTERAÇÃO: value="" --- */}
-                  <SelectItem value="">Todos</SelectItem> 
+                  <SelectItem value="ALL">Todos</SelectItem> 
                     {/* --- ALTERAÇÃO: valores 'ativo'/'inativo' --- */}
                   <SelectItem value="ativo">Ativo</SelectItem>
                   <SelectItem value="inativo">Inativo</SelectItem>

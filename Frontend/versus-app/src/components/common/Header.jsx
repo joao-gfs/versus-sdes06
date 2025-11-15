@@ -36,7 +36,7 @@ function Header() {
   };
 
   return (
-    <header className="bg-card border-b border-border shadow-sm sticky top-0 z-50">
+    <header className="bg-background border-b border-border shadow-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo/Brand */}
@@ -52,11 +52,6 @@ function Header() {
           {/* Navigation Links */}
           <nav className="hidden md:flex items-center space-x-2">
             <NavLink to="/">Home</NavLink>
-            
-            {/* Users management - only for ADM and ORG */}
-            <NavLink to="/criar-usuario" show={hasAnyRole(['ADM', 'ORG'])}>
-              Criar Usuário
-            </NavLink>
             
             {/* View all users - only for ADM */}
             <NavLink to="/usuarios" show={hasRole('ADM')}>

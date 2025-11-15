@@ -17,8 +17,9 @@ function HomePage() {
         Sistema de gestão de torneios esportivos
       </p>
 
+      <InfoCard/>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-        <InfoCard />
+        
         
         {/* Card de Criação de Usuários - apenas para ADM e ORG */}
         {hasAnyRole(['ADM', 'ORG']) && (
@@ -34,27 +35,15 @@ function HomePage() {
                 Crie novos usuários e atribua papéis e permissões de acordo com as 
                 necessidades da sua organização.
               </p>
-              <ul className="mt-4 space-y-2 text-sm list-inside list-disc text-versus-grey">
-                <li>Criar usuários Administradores (apenas ADM)</li>
-                <li>Criar usuários Organizadores (apenas ADM)</li>
-                <li>Criar usuários Técnicos (ADM e ORG)</li>
-              </ul>
             </CardContent>
             <CardFooter className="flex gap-2">
-              <Button 
-                variant="default" 
-                size="sm"
-                onClick={() => navigate('/criar-usuario')}
-              >
-                Criar Novo Usuário
-              </Button>
               {hasAnyRole(['ADM']) && (
                 <Button 
-                  variant="outline" 
+                  variant="default" 
                   size="sm"
                   onClick={() => navigate('/usuarios')}
                 >
-                  Ver Todos os Usuários
+                  Gerenciar Usuários
                 </Button>
               )}
             </CardFooter>
@@ -75,12 +64,7 @@ function HomePage() {
                 Gerencie federações, associações e clubes-matriz. Cada torneio e time 
                 deve estar vinculado a uma organização.
               </p>
-              <ul className="mt-4 space-y-2 text-sm list-inside list-disc text-versus-grey">
-                <li>Cadastrar organizações com CNPJ</li>
-                <li>Consultar e filtrar organizações</li>
-                <li>Editar informações de contato</li>
-                <li>Gerenciar status (ativo/inativo)</li>
-              </ul>
+
             </CardContent>
             <CardFooter>
               <Button 
