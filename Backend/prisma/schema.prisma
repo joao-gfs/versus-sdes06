@@ -52,11 +52,13 @@ model Organizacao {
 
 model Equipe {
   id            Int         @id @default(autoincrement())
-  nome          String
+  nome          String      @unique
   organizacaoId Int?        @map("organizacao_id")
-  status        String      @default("ativo")
+  responsavel   String?     // Técnico/Responsável
   telefone      String?
   email         String?
+  capacidadeMaxima Int?     @map("capacidade_maxima")
+  status        String      @default("ativo")
   createdAt     DateTime    @default(now()) @map("created_at")
   updatedAt     DateTime    @updatedAt     @map("updated_at")
 
