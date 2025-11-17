@@ -35,6 +35,7 @@ CREATE TABLE equipe (
   status VARCHAR(20) DEFAULT 'ativo',
   telefone VARCHAR(20),
   email VARCHAR(120),
+  capacidade_maxima INT,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );
@@ -127,3 +128,5 @@ FOR EACH ROW EXECUTE FUNCTION atualizar_updated_at();
 
 ALTER TABLE usuario ADD COLUMN failed_attempts integer NOT NULL DEFAULT 0;
 ALTER TABLE usuario ADD COLUMN locked_until timestamptz;
+
+ALTER TABLE equipe ADD COLUMN IF NOT EXISTS capacidade_maxima INTEGER;
