@@ -51,14 +51,15 @@ model Organizacao {
 }
 
 model Equipe {
-  id            Int         @id @default(autoincrement())
-  nome          String
-  organizacaoId Int?        @map("organizacao_id")
-  status        String      @default("ativo")
-  telefone      String?
-  email         String?
-  createdAt     DateTime    @default(now()) @map("created_at")
-  updatedAt     DateTime    @updatedAt     @map("updated_at")
+  id                   Int         @id @default(autoincrement())
+  nome                 String
+  organizacaoId        Int?        @map("organizacao_id")
+  status               String      @default("ativo")
+  telefone             String?
+  email                String?
+  capacidadeMaxima     Int?        @map("capacidade_maxima")
+  createdAt            DateTime    @default(now()) @map("created_at")
+  updatedAt            DateTime    @updatedAt     @map("updated_at")
 
   organizacao Organizacao?  @relation(fields: [organizacaoId], references: [id])
   atletas      Atleta[]

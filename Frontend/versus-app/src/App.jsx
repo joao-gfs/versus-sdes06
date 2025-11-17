@@ -6,6 +6,8 @@ import CreateUserPage from "./pages/CreateUserPage";
 import OrganizacoesPage from "./pages/OrganizacoesPage";
 import OrganizacaoFormPage from "./pages/OrganizacaoFormPage";
 import UsuariosPage from "./pages/UsuariosPage";
+import EquipesPage from "./pages/EquipesPage";
+import EquipeFormPage from "./pages/EquipeFormPage";
 
 // Componentes de Layout
 import ProtectedRoute from "./components/common/ProtectedRoute"; // O "Gatekeeper"
@@ -68,6 +70,33 @@ function App() {
           element={
             <ProtectedRoute>
               <OrganizacaoFormPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/equipes"
+          element={
+            <ProtectedRoute>
+              <EquipesPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/equipes/nova"
+          element={
+            <ProtectedRoute>
+              <EquipeFormPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/equipes/editar/:id"
+          element={
+            <ProtectedRoute>
+              <EquipeFormPage />
             </ProtectedRoute>
           }
         />

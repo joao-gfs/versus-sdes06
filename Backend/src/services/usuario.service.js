@@ -41,13 +41,11 @@ const createUsuario = async (payload, requester = {}) => {
     throw new ServiceError('Apenas Administradores podem criar usuários com papel ORG', 403);
   }
 
-  // 3) Papel TEC: equipe required
-  if (papel === 'TEC' && !equipeId) {
-    throw new ServiceError('Equipe é obrigatória para papel TEC');
-  }
+  // 3) Papel TEC: equipe is optional (will be linked when creating a team)
+  // Removed validation - equipe will be linked when team is created
 
-  // 4) If requester is ORG and creating TEC, ensure the equipe belongs to their organizacao
-  if (papel === 'TEC' && requesterRole === 'ORG') {
+  // 4) If requester is ORG and creating TEC with equipe, ensure the equipe belongs to their organizacao
+  if (papel === 'TEC' && equipeId && requesterRole === 'ORG') {
     if (!requester.organizacaoId) throw new ServiceError('Informar organizacao do criador no corpo da requisição (requester.organizacaoId)');
     const equipe = await prisma.equipe.findUnique({ where: { id: Number(equipeId) } });
     if (!equipe) throw new ServiceError('Equipe informada não existe');
@@ -116,6 +114,7 @@ const authenticateUsuario = async (payload) => {
   const { email, senha, password } = payload || {};
   // Accept both 'senha' (Portuguese) and 'password' (English) for flexibility
   const passwordValue = senha || password;
+  console.log('Authenticating user with email:', email);
   
   if (!email || !emailRegex.test(email)) throw new ServiceError('Email ou senha inválidos');
   if (!passwordValue || !passwordRegex.test(passwordValue)) throw new ServiceError('Email ou senha inválidos');

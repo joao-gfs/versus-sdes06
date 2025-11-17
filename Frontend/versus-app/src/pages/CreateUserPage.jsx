@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { createUser } from '../api/userApi';
-import { listOrganizacoes } from '../api/organizacaoApi';
 
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -21,13 +20,9 @@ function CreateUserPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [role, setRole] = useState('');
-  const [organizacaoId, setOrganizacaoId] = useState('');
-  const [equipeId, setEquipeId] = useState('');
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [organizacoes, setOrganizacoes] = useState([]);
-  const [loadingOrganizacoes, setLoadingOrganizacoes] = useState(false);
 
   const { user, hasRole, hasAnyRole, getPrimaryRole, getOrganizacaoId, getEquipeId } = useAuth();
   const navigate = useNavigate();
@@ -39,30 +34,6 @@ function CreateUserPage() {
       navigate('/');
     }
   }, [hasAnyRole, navigate]);
-
-  // Carregar organizações ao montar o componente
-  useEffect(() => {
-    loadOrganizacoes();
-  }, []);
-
-  const loadOrganizacoes = async () => {
-    setLoadingOrganizacoes(true);
-    try {
-      const data = await listOrganizacoes({ status: 'ATIVO' });
-      setOrganizacoes(data);
-    } catch (err) {
-      console.error('Erro ao carregar organizações:', err);
-      setOrganizacoes([]);
-    } finally {
-      setLoadingOrganizacoes(false);
-    }
-  };
-
-  const handleRoleChange = (value) => {
-    setRole(value);
-    setOrganizacaoId('');
-    setEquipeId('');
-  };
 
   const validatePassword = (pwd) => {
     // Mínimo 8 caracteres, deve conter letras e números
@@ -107,16 +78,6 @@ function CreateUserPage() {
       return;
     }
 
-    if (role === 'ORG' && !organizacaoId) {
-      setError('Organização é obrigatória para papel ORG');
-      return;
-    }
-
-    if (role === 'TEC' && !equipeId) {
-      setError('Equipe é obrigatória para papel TEC');
-      return;
-    }
-
     setLoading(true);
     try {
       const userData = {
@@ -124,8 +85,8 @@ function CreateUserPage() {
         email,
         password,
         role,
-        organizacaoId: role === 'ORG' ? organizacaoId : (role === 'TEC' ? null : null),
-        equipeId: role === 'TEC' ? equipeId : null,
+        organizacaoId: null,
+        equipeId: null,
       };
 
       const requester = {
@@ -144,8 +105,6 @@ function CreateUserPage() {
       setPassword('');
       setConfirmPassword('');
       setRole('');
-      setOrganizacaoId('');
-      setEquipeId('');
       
       // Redirecionar após 2 segundos
       setTimeout(() => {
@@ -244,7 +203,7 @@ function CreateUserPage() {
 
           <div className="space-y-2">
             <Label htmlFor="role">Papel *</Label>
-            <Select value={role} onValueChange={handleRoleChange} required>
+            <Select value={role} onValueChange={setRole} required>
               <SelectTrigger id="role">
                 <SelectValue placeholder="Selecione o papel do usuário" />
               </SelectTrigger>
@@ -256,67 +215,10 @@ function CreateUserPage() {
                 ))}
               </SelectContent>
             </Select>
+            <p className="text-xs text-muted-foreground">
+              O vínculo com organização/equipe será feito ao escolher o responsável
+            </p>
           </div>
-
-          {/* Campo Organização - apenas para ORG */}
-          {role === 'ORG' && (
-            <div className="space-y-2">
-              <Label htmlFor="organizacao">Organização *</Label>
-              <Select 
-                value={organizacaoId} 
-                onValueChange={setOrganizacaoId}
-                disabled={loadingOrganizacoes}
-                required
-              >
-                <SelectTrigger id="organizacao">
-                  <SelectValue 
-                    placeholder={
-                      loadingOrganizacoes 
-                        ? "Carregando organizações..." 
-                        : "Selecione uma organização"
-                    } 
-                  />
-                </SelectTrigger>
-                <SelectContent className="bg-background">
-                  {organizacoes.length === 0 && !loadingOrganizacoes ? (
-                    <SelectItem value="0" disabled>
-                      Nenhuma organização ativa disponível
-                    </SelectItem>
-                  ) : (
-                    organizacoes.map((org) => (
-                      <SelectItem key={org.id} value={org.id.toString()}>
-                        {org.nome}
-                      </SelectItem>
-                    ))
-                  )}
-                </SelectContent>
-              </Select>
-              <p className="text-xs text-muted-foreground">
-                Selecione a organização à qual o usuário será vinculado
-              </p>
-            </div>
-          )}
-
-          {/* Campo Equipe - apenas para TEC */}
-          {role === 'TEC' && (
-            <div className="space-y-2">
-              <Label htmlFor="equipe">
-                ID da Equipe *
-              </Label>
-              <Input
-                id="equipe"
-                type="number"
-                required
-                value={equipeId}
-                onChange={(e) => setEquipeId(e.target.value)}
-                placeholder="Digite o ID da equipe"
-                min="1"
-              />
-              <p className="text-xs text-muted-foreground">
-                Digite o ID numérico da equipe
-              </p>
-            </div>
-          )}
 
           {error && (
             <div className="p-3 text-sm text-red-500 bg-red-500/10 border border-red-500/20 rounded-md">
