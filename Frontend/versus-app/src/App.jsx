@@ -5,6 +5,7 @@ import HomePage from "./pages/HomePage";
 import CreateUserPage from "./pages/CreateUserPage";
 import OrganizacoesPage from "./pages/OrganizacoesPage";
 import OrganizacaoFormPage from "./pages/OrganizacaoFormPage";
+import UsuariosPage from "./pages/UsuariosPage";
 
 // Componentes de Layout
 import ProtectedRoute from "./components/common/ProtectedRoute"; // O "Gatekeeper"
@@ -22,6 +23,15 @@ function App() {
           element={
             <ProtectedRoute>
               <HomePage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path='/usuarios'
+          element={
+            <ProtectedRoute>
+              <UsuariosPage />
             </ProtectedRoute>
           }
         />

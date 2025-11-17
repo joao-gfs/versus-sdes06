@@ -1,4 +1,3 @@
-import * as React from "react";
 import {
   Card,
   CardHeader,
@@ -11,7 +10,7 @@ import { Button } from "./button";
 
 function InfoCard() {
   return (
-    <Card className="max-w-xl">
+    <Card className="">
       <CardHeader>
         <CardTitle>Sobre o Versus</CardTitle>
         <CardDescription>

@@ -2,25 +2,44 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 
 // 1. Criar o Contexto
 const AuthContext = createContext(null);
-
+    
 // 2. Criar o Provedor (Provider)
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
-  const [perfis, setPerfis] = useState([]);
+  // initialize from localStorage synchronously to avoid a render where auth is false
+  const [user, setUser] = useState(() => {
+    const s = localStorage.getItem('user');
+    return s ? JSON.parse(s) : null;
+  });
+  const [token, setToken] = useState(() => localStorage.getItem('token') || null);
+  const [perfis, setPerfis] = useState(() => {
+    const s = localStorage.getItem('perfis');
+    return s ? JSON.parse(s) : [];
+  });
 
-  // 3. Efeito para carregar dados do localStorage na inicialização
+  // flag to indicate restoration finished (useful for route guards)
+  const [initializing, setInitializing] = useState(true);
+
   useEffect(() => {
+    // ensure consistency (in case some values were missing)
     const storedUser = localStorage.getItem('user');
     const storedToken = localStorage.getItem('token');
     const storedPerfis = localStorage.getItem('perfis');
-    
+
     if (storedUser && storedToken) {
-      setUser(JSON.parse(storedUser));
-      setToken(storedToken);
-      setPerfis(storedPerfis ? JSON.parse(storedPerfis) : []);
+      if (!user) setUser(JSON.parse(storedUser));
+      if (!token) setToken(storedToken);
+      if (!perfis.length) setPerfis(storedPerfis ? JSON.parse(storedPerfis) : []);
+    } else {
+      // if token exists but user doesn't, you might want to fetch the user with the token here
+      // or clear inconsistent state:
+      if (!storedUser && storedToken) {
+        // optional: attempt to re-hydrate user from API, else clear token
+        // setToken(null); localStorage.removeItem('token');
+      }
     }
-  }, []);
+
+    setInitializing(false);
+  }, []); // run once
 
   // 4. Função de Login
   const login = (userData, userToken, userPerfis = []) => {
@@ -75,6 +94,7 @@ export const AuthProvider = ({ children }) => {
     token,
     perfis,
     isAuthenticated: !!token, // Verdadeiro se houver um token
+    initializing, // expose the flag
     login,
     logout,
     hasRole,
