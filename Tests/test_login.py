@@ -25,51 +25,16 @@ class LogInTest(unittest.TestCase):
         
         # Initialize the Firefox driver using webdriver_manager
         # This automatically downloads and manages GeckoDriver
-        service = FirefoxService(executable_path=GeckoDriverManager().install())
+        # service = FirefoxService(executable_path=GeckoDriverManager().install())
+        # Use cached geckodriver to avoid GitHub API rate limits
+        service = FirefoxService(executable_path="/home/jgfs/.wdm/drivers/geckodriver/linux64/v0.36.0/geckodriver")
         
         self.driver = webdriver.Firefox(service=service, options=options)
         
         # Define a standard wait time for elements to appear
         self.wait = WebDriverWait(self.driver, 10) # 10-second maximum wait
 
-    def test_successful_login(self):
-        """Test a login attempt with valid credentials."""
-        
-        # 1. Navigate to the login page
-        self.driver.get(f"{BASE_URL}/login")
-        
-        try:
-            # 2. Find the username field and type the username
-            # We wait until the element is visible before interacting
-            username_field = self.wait.until(EC.visibility_of_element_located((By.ID, "email")))
-            username_field.send_keys("joao.org@example.com")
-            
-            # 3. Find the password field and type the password
-            password_field = self.wait.until(EC.visibility_of_element_located((By.ID, "password")))
-            password_field.send_keys("Org123456")
-            
-            # 4. Find and click the submit button
-            submit_button = self.wait.until(EC.element_to_be_clickable((By.ID, "login-button")))
-            submit_button.click()
-            
-            # 5. Verify the login was successful
-            # We check for a specific element on the "logged in" page
-            success_header = self.wait.until(
-                EC.visibility_of_element_located((By.XPATH, "//h1[text()='Versus Homepage']"))
-            )
-            
-            # 6. Assert that the success message is displayed
-            self.assertTrue(success_header.is_displayed(), "Success header not found.")
-            
-            # Also, assert the URL has changed
-            self.assertNotIn("/login", self.driver.current_url)
-
-        except Exception as e:
-            # If any step fails, print the exception and fail the test
-            print(f"Error during successful login test: {e}")
-            self.fail("Successful login test encountered an error.")
-
-    def test_failed_login(self):
+    def test_1_failed_login(self):
         """Test a login attempt with invalid credentials."""
         
         # 1. Navigate to the login page
@@ -102,6 +67,43 @@ class LogInTest(unittest.TestCase):
             # If any step fails, print the exception and fail the test
             print(f"Error during failed login test: {e}")
             self.fail("Failed login test encountered an error.")
+
+    def test_2_successful_login(self):
+        """Test a login attempt with valid credentials."""
+        
+        # 1. Navigate to the login page
+        self.driver.get(f"{BASE_URL}/login")
+        
+        try:
+            # 2. Find the username field and type the username
+            # We wait until the element is visible before interacting
+            username_field = self.wait.until(EC.visibility_of_element_located((By.ID, "email")))
+            username_field.send_keys("joao.org@example.com")
+            
+            # 3. Find the password field and type the password
+            password_field = self.wait.until(EC.visibility_of_element_located((By.ID, "password")))
+            password_field.send_keys("Org123456")
+            
+            # 4. Find and click the submit button
+            submit_button = self.wait.until(EC.element_to_be_clickable((By.ID, "login-button")))
+            submit_button.click()
+            
+            # 5. Verify the login was successful
+            # We check for a specific element on the "logged in" page
+            success_header = self.wait.until(
+                EC.visibility_of_element_located((By.XPATH, "//h1[contains(text(), 'Bem-vindo')]"))
+            )
+            
+            # 6. Assert that the success message is displayed
+            self.assertTrue(success_header.is_displayed(), "Success header not found.")
+            
+            # Also, assert the URL has changed
+            self.assertNotIn("/login", self.driver.current_url)
+
+        except Exception as e:
+            # If any step fails, print the exception and fail the test
+            print(f"Error during successful login test: {e}")
+            self.fail("Successful login test encountered an error.")
 
     def tearDown(self):
         """Clean up after each test.
