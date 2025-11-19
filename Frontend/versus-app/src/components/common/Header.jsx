@@ -20,15 +20,14 @@ function Header() {
   // Navigation link component with active state styling
   const NavLink = ({ to, children, show = true }) => {
     if (!show) return null;
-    
+
     return (
       <button
         onClick={() => navigate(to)}
-        className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-          isActive(to)
+        className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive(to)
             ? 'bg-versus-yellow text-versus-background'
             : 'text-versus-grey hover:bg-versus-yellow/10 hover:text-versus-yellow'
-        }`}
+          }`}
       >
         {children}
       </button>
@@ -52,20 +51,25 @@ function Header() {
           {/* Navigation Links */}
           <nav className="hidden md:flex items-center space-x-2">
             <NavLink to="/">Home</NavLink>
-            
+
             {/* View all users - only for ADM */}
             <NavLink to="/usuarios" show={hasRole('ADM')}>
               Usuários
             </NavLink>
-            
+
             {/* Organizations - only for ADM */}
             <NavLink to="/organizacoes" show={hasRole('ADM')}>
               Organizações
             </NavLink>
-            
+
             {/* Teams - for ADM, ORG, and TEC */}
             <NavLink to="/equipes" show={hasAnyRole(['ADM', 'ORG', 'TEC'])}>
               Equipes
+            </NavLink>
+
+            {/* Tournaments - for ADM and ORG */}
+            <NavLink to="/torneios" show={hasAnyRole(['ADM', 'ORG'])}>
+              Torneios
             </NavLink>
           </nav>
 
@@ -93,21 +97,25 @@ function Header() {
         {/* Mobile Navigation Menu */}
         <nav className="md:hidden pb-4 flex flex-wrap gap-2">
           <NavLink to="/">Home</NavLink>
-          
+
           <NavLink to="/criar-usuario" show={hasAnyRole(['ADM', 'ORG'])}>
             Criar Usuário
           </NavLink>
-          
+
           <NavLink to="/usuarios" show={hasRole('ADM')}>
             Usuários
           </NavLink>
-          
+
           <NavLink to="/organizacoes" show={hasRole('ADM')}>
             Organizações
           </NavLink>
-          
+
           <NavLink to="/equipes" show={hasAnyRole(['ADM', 'ORG', 'TEC'])}>
             Equipes
+          </NavLink>
+
+          <NavLink to="/torneios" show={hasAnyRole(['ADM', 'ORG'])}>
+            Torneios
           </NavLink>
         </nav>
       </div>
