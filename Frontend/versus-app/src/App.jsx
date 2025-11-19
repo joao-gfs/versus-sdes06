@@ -8,6 +8,8 @@ import OrganizacaoFormPage from "./pages/OrganizacaoFormPage";
 import UsuariosPage from "./pages/UsuariosPage";
 import EquipesPage from "./pages/EquipesPage";
 import EquipeFormPage from "./pages/EquipeFormPage";
+import TournamentList from "./pages/TournamentList";
+import TournamentForm from "./pages/TournamentForm";
 
 // Componentes de Layout
 import ProtectedRoute from "./components/common/ProtectedRoute"; // O "Gatekeeper"
@@ -97,6 +99,33 @@ function App() {
           element={
             <ProtectedRoute>
               <EquipeFormPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/torneios"
+          element={
+            <ProtectedRoute>
+              <TournamentList />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/torneios/novo"
+          element={
+            <ProtectedRoute>
+              <TournamentForm />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/torneios/editar/:id"
+          element={
+            <ProtectedRoute>
+              <TournamentForm />
             </ProtectedRoute>
           }
         />
