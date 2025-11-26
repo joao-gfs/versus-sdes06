@@ -506,6 +506,88 @@ const inscreverEquipeEmTorneio = async (payload = {}, requester = {}) => {
   return inscricao;
 };
 
+/**
+ * Aprovar/Rejeitar/Gerenciar inscrição de equipe em torneio
+ * inscricaoId: ID da inscrição (registro torneio_equipe)
+ * novoStatus: 'aprovada' | 'rejeitada' | 'inscrita'
+ * requester: { role, usuarioId, organizacaoId }
+ * Atores: ADM, ORG (da organização do torneio)
+ * Regras:
+ * - ORG só pode gerenciar inscrições de torneios da própria organização
+ * - Não pode alterar inscrições de torneios publicados ou encerrados
+ */
+const gerenciarInscricao = async (inscricaoId, novoStatus, requester = {}) => {
+  // Validar permissões
+  if (!requester || !requester.role) {
+    throw new ServiceError('Role do solicitante é obrigatório', 401);
+  }
+  const requesterRole = String(requester.role).toUpperCase();
+  if (!['ADM', 'ORG'].includes(requesterRole)) {
+    throw new ServiceError('Apenas Administradores e Organizadores podem gerenciar inscrições', 403);
+  }
+
+  // Validar ID
+  const id = Number(inscricaoId);
+  if (!id || !Number.isInteger(id)) {
+    throw new ServiceError('ID de inscrição inválido');
+  }
+
+  // Validar status
+  const statusValidos = ['inscrita', 'aprovada', 'rejeitada'];
+  if (!statusValidos.includes(novoStatus)) {
+    throw new ServiceError(`Status inválido. Use: ${statusValidos.join(', ')}`);
+  }
+
+  // Buscar inscrição com dados do torneio e equipe
+  const inscricao = await prisma.torneioEquipe.findUnique({
+    where: { id },
+    include: {
+      torneio: {
+        select: {
+          id: true,
+          nome: true,
+          organizacaoId: true,
+          status: true,
+        }
+      },
+      equipe: {
+        select: {
+          id: true,
+          nome: true,
+        }
+      }
+    }
+  });
+
+  if (!inscricao) {
+    throw new ServiceError('Inscrição não encontrada', 404);
+  }
+
+  // ORG só pode gerenciar inscrições de torneios da própria organização
+  if (requesterRole === 'ORG') {
+    if (inscricao.torneio.organizacaoId !== Number(requester.organizacaoId)) {
+      throw new ServiceError('Organizador só pode gerenciar inscrições de torneios da própria organização', 403);
+    }
+  }
+
+  // Não pode alterar inscrições de torneios publicados ou encerrados
+  if (inscricao.torneio.status !== 'em configuração') {
+    throw new ServiceError('Não é possível gerenciar inscrições de torneios publicados ou encerrados', 403);
+  }
+
+  // Atualizar status da inscrição
+  const updated = await prisma.torneioEquipe.update({
+    where: { id },
+    data: { status: novoStatus },
+    include: {
+      torneio: { select: { id: true, nome: true } },
+      equipe: { select: { id: true, nome: true } }
+    }
+  });
+
+  return updated;
+};
+
 module.exports = {
   createEquipe,
   listEquipes,
@@ -513,4 +595,5 @@ module.exports = {
   updateEquipe,
   deleteEquipe,
   inscreverEquipeEmTorneio,
+  gerenciarInscricao,
 };

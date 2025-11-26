@@ -10,6 +10,7 @@ import EquipesPage from "./pages/EquipesPage";
 import EquipeFormPage from "./pages/EquipeFormPage";
 import TournamentList from "./pages/TournamentList";
 import TournamentForm from "./pages/TournamentForm";
+import TournamentInscricoesPage from "./pages/TournamentInscricoesPage";
 import AtletasPage from "./pages/AtletasPage";
 import AtletaFormPage from "./pages/AtletaFormPage";
 import ChaveamentoPage from "./pages/ChaveamentoPage";
@@ -140,6 +141,15 @@ function App() {
           element={
             <ProtectedRoute>
               <ChaveamentoPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/torneios/:id/inscricoes"
+          element={
+            <ProtectedRoute>
+              <TournamentInscricoesPage />
             </ProtectedRoute>
           }
         />

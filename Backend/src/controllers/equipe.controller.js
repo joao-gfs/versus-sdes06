@@ -145,6 +145,38 @@ async function handleInscreverEquipeEmTorneio(req, res) {
   }
 }
 
+// PUT /api/equipes/inscricoes/:id - gerencia status de inscrição (aprovar/rejeitar)
+async function handleGerenciarInscricao(req, res) {
+  try {
+    const inscricaoId = Number(req.params.id);
+    const { status } = req.body;
+
+    if (!inscricaoId || !Number.isInteger(inscricaoId)) {
+      return res.status(400).json({ error: 'ID de inscrição inválido' });
+    }
+
+    if (!status) {
+      return res.status(400).json({ error: 'Status é obrigatório' });
+    }
+
+    const roleHeader = (req.headers['x-role'] || '').toString().toUpperCase();
+    const usuarioIdHeader = req.headers['x-usuario-id'] ? Number(req.headers['x-usuario-id']) : null;
+    const organizacaoIdHeader = req.headers['x-organizacao-id'] ? Number(req.headers['x-organizacao-id']) : null;
+
+    const requester = {
+      role: roleHeader || (req.user && req.user.role ? String(req.user.role).toUpperCase() : ''),
+      usuarioId: usuarioIdHeader || (req.user && req.user.id ? Number(req.user.id) : null),
+      organizacaoId: organizacaoIdHeader || (req.user && req.user.organizacaoId ? Number(req.user.organizacaoId) : null),
+    };
+
+    const updated = await equipeService.gerenciarInscricao(inscricaoId, status, requester);
+    return res.json(updated);
+  } catch (err) {
+    const code = err.statusCode || 400;
+    return res.status(code).json({ error: err.message });
+  }
+}
+
 module.exports = {
   handleCreateEquipe,
   handleListEquipes,
@@ -152,4 +184,5 @@ module.exports = {
   handleUpdateEquipe,
   handleDeleteEquipe,
   handleInscreverEquipeEmTorneio,
+  handleGerenciarInscricao,
 };

@@ -370,6 +370,18 @@ function TournamentList() {
                     <TableCell>{t._count?.equipes || 0}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2 flex-wrap">
+                        {/* Botão Gerenciar Inscrições - apenas para torneios em configuração */}
+                        {t.status === 'em configuração' && (isAdm || isOrg) && (
+                          <Button
+                            onClick={() => navigate(`/torneios/${t.id}/inscricoes`)}
+                            variant="secondary"
+                            size="sm"
+                            className="bg-blue-600 hover:bg-blue-700 text-white"
+                          >
+                            📋 Inscrições ({t._count?.equipes || 0})
+                          </Button>
+                        )}
+
                         {/* Botão Sortear Chaveamento - apenas para torneios em configuração */}
                         {t.status === 'em configuração' && (isAdm || isOrg) && (
                           <Button
