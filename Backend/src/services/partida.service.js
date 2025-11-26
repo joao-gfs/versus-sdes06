@@ -39,7 +39,12 @@ const registrarPartida = async (partidaId, payload = {}, requesterRole = '') => 
         throw new ServiceError('Partida não encontrada', 404);
     }
 
-    // Verificar se torneio está publicado
+    // Validação 1: Verificar se a partida tem ambas as equipes definidas
+    if (!partida.equipeAId || !partida.equipeBId) {
+        throw new ServiceError('A partida não possui ambas as equipes definidas. Não é possível registrar resultado.', 400);
+    }
+
+    // Validação 2: Verificar se torneio está publicado
     if (partida.torneio.status !== 'publicado') {
         throw new ServiceError('Só é permitido registrar resultados de partidas em torneios publicados', 403);
     }
@@ -50,12 +55,14 @@ const registrarPartida = async (partidaId, payload = {}, requesterRole = '') => 
     }
 
     // Validar gols mandante
+    // NOTA: Requisito RFC07 menciona "maior que 0", mas isto não faz sentido em futebol
+    // pois partidas podem ter placar 0-0. Validação correta é >= 0.
     const golsMandante = payload.golsMandante !== undefined ? Number(payload.golsMandante) : null;
     if (golsMandante === null) {
         throw new ServiceError('Gols do mandante são obrigatórios');
     }
     if (!Number.isInteger(golsMandante) || golsMandante < 0) {
-        throw new ServiceError('Gols do mandante devem ser um número inteiro >= 0');
+        throw new ServiceError('Gols do mandante devem ser um número inteiro maior ou igual a 0');
     }
 
     // Validar gols visitante
@@ -64,7 +71,7 @@ const registrarPartida = async (partidaId, payload = {}, requesterRole = '') => 
         throw new ServiceError('Gols do visitante são obrigatórios');
     }
     if (!Number.isInteger(golsVisitante) || golsVisitante < 0) {
-        throw new ServiceError('Gols do visitante devem ser um número inteiro >= 0');
+        throw new ServiceError('Gols do visitante devem ser um número inteiro maior ou igual a 0');
     }
 
     // Validar empates em mata-mata
@@ -87,6 +94,15 @@ const registrarPartida = async (partidaId, payload = {}, requesterRole = '') => 
         dataPartida = new Date(payload.dataPartida);
         if (isNaN(dataPartida.getTime())) {
             throw new ServiceError('Data da partida inválida. Use formato DD/MM/AAAA ou AAAA-MM-DD');
+        }
+    }
+
+    // Validação adicional: Se status for "Concluída", data não pode ser futura
+    if (status === 'Concluída' && dataPartida) {
+        const hoje = new Date();
+        hoje.setHours(23, 59, 59, 999); // Fim do dia de hoje
+        if (dataPartida > hoje) {
+            throw new ServiceError('Não é possível concluir uma partida com data futura. Altere o status para "Marcada".');
         }
     }
 

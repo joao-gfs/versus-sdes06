@@ -46,8 +46,8 @@ const createTorneio = async (payload = {}) => {
   const dataFim = payload.dataFim ? new Date(payload.dataFim) : null;
 
   // Validações obrigatórias
-  if (!organizacaoId || !Number.isInteger(organizacaoId)) {
-    throw new ServiceError('Organização é obrigatória');
+  if (!organizacaoId || !Number.isInteger(organizacaoId) || organizacaoId <= 0) {
+    throw new ServiceError('Organização é obrigatória e deve ser um ID válido');
   }
 
   if (!nome) {
@@ -439,15 +439,25 @@ const sortearChaveamento = async (torneioId) => {
     throw new ServiceError('Torneio não encontrado', 404);
   }
 
+  // Validação 1: Status deve ser "em configuração"
   if (torneio.status !== 'em configuração') {
     throw new ServiceError(`Não é permitido sortear chaveamento. Torneio está no status: ${torneio.status}`, 403);
   }
 
-  // Verificar se já existe chaveamento (partidas criadas)
+  // Validação 2: Verificar se já existe chaveamento (partidas criadas)
   if (torneio._count.partidas > 0) {
     throw new ServiceError('Já existe um chaveamento para este torneio. Use a reversão de sorteio para gerar um novo.', 409);
   }
 
+  // Validação 3: Formato do torneio deve ser válido
+  if (!torneio.formato || !FORMATOS_VALIDOS.includes(torneio.formato)) {
+    throw new ServiceError(`Formato do torneio inválido ou não definido: ${torneio.formato}. Defina um formato válido antes de sortear.`, 400);
+  }
+
+  // Validação 4: Buscar equipes aprovadas
+  // NOTA: Requisito RFC06 menciona "inscrições encerradas", mas não há campo na tabela
+  // para controlar o estado das inscrições. Atualmente verifica apenas status='aprovada'.
+  // Considere adicionar um campo 'inscricoesEncerradas' na tabela torneio para maior controle.
   const equipesInscritas = await prisma.torneioEquipe.findMany({
     where: {
       torneioId: id,
@@ -458,11 +468,19 @@ const sortearChaveamento = async (torneioId) => {
     }
   });
 
+  // Validação 5: Mínimo de 2 equipes aprovadas
   if (equipesInscritas.length < 2) {
     throw new ServiceError('É necessário no mínimo 2 equipes aprovadas para realizar o sorteio.', 400);
   }
 
-  const equipeIds = equipesInscritas.map(te => te.equipeId);
+  // Validação 6: Garantir que todas as equipes têm IDs válidos
+  const equipeIds = equipesInscritas.map(te => te.equipeId).filter(id => id !== null && id !== undefined);
+  
+  if (equipeIds.length !== equipesInscritas.length) {
+    throw new ServiceError('Existem equipes com IDs inválidos no torneio. Verifique os dados das equipes inscritas.', 400);
+  }
+
+  // Embaralhar equipes para garantir aleatoriedade
   const equipesEmbaralhadas = shuffleArray([...equipeIds]);
 
   let partidasParaCriar = [];

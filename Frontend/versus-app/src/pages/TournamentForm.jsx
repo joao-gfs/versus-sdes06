@@ -48,6 +48,9 @@ function TournamentForm() {
       const orgId = getOrganizacaoId();
       if (orgId) {
         setFormData(prev => ({ ...prev, organizacaoId: String(orgId) }));
+      } else {
+        // Se não tem organizacaoId, mostrar erro
+        setError('Seu perfil de usuário não está associado a uma organização. Entre em contato com o administrador.');
       }
     }
 
@@ -110,13 +113,19 @@ function TournamentForm() {
     setLoading(true);
 
     try {
-      if (!formData.organizacaoId) {
-        throw new Error('A organização é obrigatória.');
+      // Validar organizacaoId antes de enviar
+      if (!formData.organizacaoId || formData.organizacaoId === '' || formData.organizacaoId === '0') {
+        throw new Error('A organização é obrigatória. Verifique se você está associado a uma organização.');
+      }
+
+      const orgIdNumber = Number(formData.organizacaoId);
+      if (!Number.isInteger(orgIdNumber) || orgIdNumber <= 0) {
+        throw new Error('ID de organização inválido.');
       }
 
       const payload = {
         ...formData,
-        organizacaoId: Number(formData.organizacaoId),
+        organizacaoId: orgIdNumber,
         capacidadeMaxima: formData.capacidadeMaxima ? Number(formData.capacidadeMaxima) : undefined,
       };
 
