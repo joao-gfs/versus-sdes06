@@ -232,21 +232,21 @@ function PartidasPage() {
                                 {partidas.map((p) => (
                                     <TableRow key={p.id}>
                                         <TableCell className="font-semibold">
-                                            {p.equipeMandante?.nome || '-'}
+                                            {p.equipeA?.nome || '-'}
                                         </TableCell>
                                         <TableCell className="text-center font-bold">
-                                            {p.golsMandante ?? '-'}
+                                            {p.placarA ?? '-'}
                                         </TableCell>
                                         <TableCell className="text-center text-muted-foreground">
                                             x
                                         </TableCell>
                                         <TableCell className="text-center font-bold">
-                                            {p.golsVisitante ?? '-'}
+                                            {p.placarB ?? '-'}
                                         </TableCell>
                                         <TableCell className="font-semibold">
-                                            {p.equipeVisitante?.nome || '-'}
+                                            {p.equipeB?.nome || '-'}
                                         </TableCell>
-                                        <TableCell>{formatDate(p.dataPartida)}</TableCell>
+                                        <TableCell>{formatDate(p.dataJogo)}</TableCell>
                                         <TableCell className={getStatusColor(p.status)}>
                                             {p.status}
                                         </TableCell>

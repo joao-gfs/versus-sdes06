@@ -63,18 +63,18 @@ function PartidaFormPage() {
             setPartida(partidaEncontrada);
 
             // Preencher formulário com dados existentes
-            if (partidaEncontrada.golsMandante !== null) {
-                setGolsMandante(String(partidaEncontrada.golsMandante));
+            if (partidaEncontrada.placarA !== null) {
+                setGolsMandante(String(partidaEncontrada.placarA));
             }
-            if (partidaEncontrada.golsVisitante !== null) {
-                setGolsVisitante(String(partidaEncontrada.golsVisitante));
+            if (partidaEncontrada.placarB !== null) {
+                setGolsVisitante(String(partidaEncontrada.placarB));
             }
             if (partidaEncontrada.status) {
                 setStatus(partidaEncontrada.status);
             }
-            if (partidaEncontrada.dataPartida) {
+            if (partidaEncontrada.dataJogo) {
                 // Converter para formato DD/MM/AAAA
-                const date = new Date(partidaEncontrada.dataPartida);
+                const date = new Date(partidaEncontrada.dataJogo);
                 const day = String(date.getDate()).padStart(2, '0');
                 const month = String(date.getMonth() + 1).padStart(2, '0');
                 const year = date.getFullYear();
@@ -193,11 +193,11 @@ function PartidaFormPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                         <div>
                             <span className="text-muted-foreground">Equipe Mandante:</span>
-                            <p className="font-semibold">{partida.equipeMandante?.nome || '-'}</p>
+                            <p className="font-semibold">{partida.equipeA?.nome || '-'}</p>
                         </div>
                         <div>
                             <span className="text-muted-foreground">Equipe Visitante:</span>
-                            <p className="font-semibold">{partida.equipeVisitante?.nome || '-'}</p>
+                            <p className="font-semibold">{partida.equipeB?.nome || '-'}</p>
                         </div>
                         <div>
                             <span className="text-muted-foreground">Torneio:</span>

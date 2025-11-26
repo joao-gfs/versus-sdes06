@@ -104,23 +104,7 @@ function ChaveamentoPage() {
         }
     };
 
-    // Agrupar partidas por grupo/fase
-    const agruparPartidas = () => {
-        if (!chaveamento?.partidas) return {};
 
-        const grupos = {};
-        chaveamento.partidas.forEach((partida) => {
-            const chave = partida.grupo || partida.fase || 'Geral';
-            if (!grupos[chave]) {
-                grupos[chave] = [];
-            }
-            grupos[chave].push(partida);
-        });
-
-        return grupos;
-    };
-
-    const partidasAgrupadas = agruparPartidas();
 
     return (
         <div className="space-y-6">
@@ -194,17 +178,17 @@ function ChaveamentoPage() {
                 <div className="p-8 text-center text-muted-foreground">
                     Carregando chaveamento...
                 </div>
-            ) : !chaveamento || !chaveamento.partidas || chaveamento.partidas.length === 0 ? (
+            ) : !chaveamento || !chaveamento.chaveamento || chaveamento.chaveamento.length === 0 ? (
                 <div className="p-8 text-center text-muted-foreground bg-card rounded-lg border">
                     Nenhuma partida encontrada para este torneio.
                 </div>
             ) : (
                 <div className="space-y-6">
-                    {Object.keys(partidasAgrupadas).map((grupo) => (
-                        <div key={grupo} className="bg-card text-card-foreground rounded-lg shadow-lg border overflow-hidden">
+                    {chaveamento.chaveamento.map((grupoObj, index) => (
+                        <div key={index} className="bg-card text-card-foreground rounded-lg shadow-lg border overflow-hidden">
                             <div className="bg-versus-yellow/10 px-6 py-3 border-b">
                                 <h3 className="text-lg font-semibold text-versus-yellow">
-                                    {grupo}
+                                    {grupoObj.fase} {grupoObj.grupo !== 'Único' ? `- Grupo ${grupoObj.grupo}` : ''}
                                 </h3>
                             </div>
                             <div className="overflow-x-auto">
@@ -222,24 +206,24 @@ function ChaveamentoPage() {
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
-                                        {partidasAgrupadas[grupo].map((partida) => (
+                                        {grupoObj.partidas.map((partida) => (
                                             <TableRow key={partida.id}>
                                                 <TableCell className="font-semibold">
-                                                    {partida.equipeMandante?.nome || '-'}
+                                                    {partida.equipeA?.nome || '-'}
                                                 </TableCell>
                                                 <TableCell className="text-center font-bold">
-                                                    {partida.golsMandante ?? '-'}
+                                                    {partida.placarA ?? '-'}
                                                 </TableCell>
                                                 <TableCell className="text-center text-muted-foreground">
                                                     x
                                                 </TableCell>
                                                 <TableCell className="text-center font-bold">
-                                                    {partida.golsVisitante ?? '-'}
+                                                    {partida.placarB ?? '-'}
                                                 </TableCell>
                                                 <TableCell className="font-semibold">
-                                                    {partida.equipeVisitante?.nome || '-'}
+                                                    {partida.equipeB?.nome || '-'}
                                                 </TableCell>
-                                                <TableCell>{formatDate(partida.dataPartida)}</TableCell>
+                                                <TableCell>{formatDate(partida.dataJogo)}</TableCell>
                                                 <TableCell className={getStatusColor(partida.status)}>
                                                     {partida.status}
                                                 </TableCell>
@@ -257,9 +241,9 @@ function ChaveamentoPage() {
             )}
 
             {/* Resumo */}
-            {!loading && chaveamento?.partidas && (
+            {!loading && chaveamento?.chaveamento && (
                 <div className="text-sm text-muted-foreground text-center">
-                    Total de {chaveamento.partidas.length} partida(s)
+                    Total de grupos/fases: {chaveamento.chaveamento.length}
                 </div>
             )}
         </div>
