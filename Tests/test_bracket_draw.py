@@ -27,9 +27,9 @@ class BracketDrawTest(unittest.TestCase):
         """Helper method to log in as organizer."""
         self.driver.get(f"{BASE_URL}/login")
         
-        # Login with organizer credentials from users.txt
+        # Login with organizer credentials from users.txt (Roberto - Associação)
         username_field = self.wait.until(EC.visibility_of_element_located((By.ID, "email")))
-        username_field.send_keys("carlos@liga.com")
+        username_field.send_keys("roberto@associacao.com")
         
         password_field = self.wait.until(EC.visibility_of_element_located((By.ID, "password")))
         password_field.send_keys("Senha123")

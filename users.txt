@@ -1,0 +1,29 @@
+USUÁRIOS E SENHAS DE TESTE
+===========================
+
+Senha padrão para todos os usuários: Senha123
+
+1. ADMINISTRADOR
+   Email: admin@versus.com
+
+2. ORGANIZADORES
+   - Carlos (Liga Nacional): carlos@liga.com
+   - Roberto (Associação): roberto@associacao.com
+
+3. TÉCNICOS (TIMES)
+   - Flamengo: tite@flamengo.com
+   - Corinthians: mano@corinthians.com
+   - Palmeiras: abel@palmeiras.com
+   - São Paulo: dorival@saopaulo.com
+   - Vasco: ramon@vasco.com
+   - Botafogo: tiago@botafogo.com
+   - Fluminense: diniz@fluminense.com
+   - Santos: carille@santos.com
+
+DADOS CRIADOS:
+- 2 Organizações (Liga Nacional, Associação)
+- 8 Equipes (4 em cada organização)
+- 2 Torneios:
+  - "Copa dos Campeões" (Mata-mata, Publicado, com partidas)
+  - "Torneio Regional" (Liga, Em configuração)
+- Atletas de exemplo no Flamengo e Palmeiras
