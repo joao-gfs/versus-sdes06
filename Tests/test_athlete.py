@@ -57,12 +57,15 @@ class AthleteTest(unittest.TestCase):
             athlete_name = f"Atleta Teste {unique_id}"
             
             # Fill athlete form
+            # Note: Equipe field is auto-selected when logged in as coach (tecnico)
+            # The frontend automatically sets equipeId based on the logged-in user's team
+            
             nome_field = self.wait.until(EC.visibility_of_element_located((By.ID, "nome")))
             nome_field.send_keys(athlete_name)
             
             # Data de nascimento - format DD/MM/AAAA
             data_field = self.wait.until(EC.visibility_of_element_located((By.ID, "data")))
-            data_field.send_keys("15/01/2000")
+            data_field.send_keys("15012000")  # Send without formatting, let the form apply it
             
             # CPF - format will be applied automatically
             cpf_field = self.wait.until(EC.visibility_of_element_located((By.ID, "cpf")))
