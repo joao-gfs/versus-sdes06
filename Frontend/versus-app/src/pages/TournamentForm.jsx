@@ -20,7 +20,7 @@ function TournamentForm() {
   const { id } = useParams();
   const isEditMode = !!id;
   const navigate = useNavigate();
-  const { user, hasRole } = useAuth();
+  const { user, hasRole, getOrganizacaoId } = useAuth();
 
   const [formData, setFormData] = useState({
     organizacaoId: '',
@@ -44,14 +44,17 @@ function TournamentForm() {
   useEffect(() => {
     if (isAdm) {
       loadOrganizacoes();
-    } else if (user?.organizacaoId) {
-      setFormData(prev => ({ ...prev, organizacaoId: String(user.organizacaoId) }));
+    } else {
+      const orgId = getOrganizacaoId();
+      if (orgId) {
+        setFormData(prev => ({ ...prev, organizacaoId: String(orgId) }));
+      }
     }
 
     if (isEditMode) {
       loadTorneio();
     }
-  }, [isEditMode, isAdm, user]);
+  }, [isEditMode, isAdm, user, getOrganizacaoId]);
 
   const loadOrganizacoes = async () => {
     try {
@@ -107,6 +110,10 @@ function TournamentForm() {
     setLoading(true);
 
     try {
+      if (!formData.organizacaoId) {
+        throw new Error('A organização é obrigatória.');
+      }
+
       const payload = {
         ...formData,
         organizacaoId: Number(formData.organizacaoId),

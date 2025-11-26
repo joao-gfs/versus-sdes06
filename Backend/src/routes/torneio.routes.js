@@ -17,4 +17,13 @@ router.put('/:id', torneioController.handleUpdateTorneio);
 // DELETE /api/torneios/:id - exclui torneio (física se "em configuração" sem equipes; senão lógica)
 router.delete('/:id', torneioController.handleDeleteTorneio);
 
+// POST /api/torneios/:id/sorteio - sorteia o chaveamento do torneio
+router.post('/:id/sorteio', torneioController.handleSortearChaveamento);
+
+// POST /api/torneios/:id/reverter-sorteio - reverte o sorteio do chaveamento
+router.post('/:id/reverter-sorteio', torneioController.handleReverterSorteio);
+
+// GET /api/torneios/:id/chaveamento - consulta o chaveamento do torneio
+router.get('/:id/chaveamento', torneioController.handleConsultarChaveamento);
+
 module.exports = router;

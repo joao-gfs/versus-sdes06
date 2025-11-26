@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { listTorneios, deleteTorneio } from '../api/torneioApi';
+import { listTorneios, deleteTorneio, sortearChaveamento, reverterSorteio } from '../api/torneioApi';
 import { listOrganizacoes } from '../api/organizacaoApi';
 
 import { Button } from '../components/ui/button';
@@ -161,6 +161,46 @@ function TournamentList() {
     setFiltroOrganizacao('ALL');
     setOrdenacao('createdAt');
     // O useEffect vai disparar o reload
+  };
+
+  const handleSortearChaveamento = async (id, nome) => {
+    if (!window.confirm(`Tem certeza que deseja sortear o chaveamento do torneio "${nome}"?`)) {
+      return;
+    }
+
+    setError(null);
+    setSuccess(null);
+
+    try {
+      const role = user?.role || '';
+      const orgId = user?.organizacaoId || null;
+
+      const result = await sortearChaveamento(id, role, orgId);
+      setSuccess(result.message || 'Chaveamento sorteado com sucesso');
+      loadTorneios();
+    } catch (err) {
+      setError(err.message || 'Falha ao sortear chaveamento');
+    }
+  };
+
+  const handleReverterSorteio = async (id, nome) => {
+    if (!window.confirm(`Tem certeza que deseja reverter o sorteio do torneio "${nome}"?`)) {
+      return;
+    }
+
+    setError(null);
+    setSuccess(null);
+
+    try {
+      const role = user?.role || '';
+      const orgId = user?.organizacaoId || null;
+
+      const result = await reverterSorteio(id, role, orgId);
+      setSuccess(result.message || 'Sorteio revertido com sucesso');
+      loadTorneios();
+    } catch (err) {
+      setError(err.message || 'Falha ao reverter sorteio');
+    }
   };
 
   return (
@@ -329,25 +369,59 @@ function TournamentList() {
                     <TableCell>{formatDate(t.dataFim)}</TableCell>
                     <TableCell>{t._count?.equipes || 0}</TableCell>
                     <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          onClick={() => navigate(`/torneios/editar/${t.id}`)}
-                          variant="outline"
-                          size="sm"
-                          disabled={t.status === 'encerrado' && !isAdm} // ADM pode tudo? Requisito diz que publicado não edita.
-                        // Requisito: "Após o torneio ser publicado, não é permitido fazer edições"
-                        // Mas talvez visualizar?
-                        // Vamos permitir clicar e no form tratamos bloqueio ou readonly.
-                        >
-                          Editar
-                        </Button>
-                        <Button
-                          onClick={() => handleDelete(t.id, t.nome)}
-                          variant="destructive"
-                          size="sm"
-                        >
-                          Excluir
-                        </Button>
+                      <div className="flex justify-end gap-2 flex-wrap">
+                        {/* Botão Sortear Chaveamento - apenas para torneios em configuração */}
+                        {t.status === 'em configuração' && (isAdm || isOrg) && (
+                          <Button
+                            onClick={() => handleSortearChaveamento(t.id, t.nome)}
+                            variant="default"
+                            size="sm"
+                          >
+                            Sortear Chaveamento
+                          </Button>
+                        )}
+
+                        {/* Botão Ver Chaveamento - para torneios publicados ou encerrados */}
+                        {(t.status === 'publicado' || t.status === 'encerrado') && (
+                          <Button
+                            onClick={() => navigate(`/torneios/${t.id}/chaveamento`)}
+                            variant="secondary"
+                            size="sm"
+                          >
+                            Ver Chaveamento
+                          </Button>
+                        )}
+
+                        {/* Botão Reverter Sorteio - apenas para torneios publicados */}
+                        {t.status === 'publicado' && (isAdm || isOrg) && (
+                          <Button
+                            onClick={() => handleReverterSorteio(t.id, t.nome)}
+                            variant="outline"
+                            size="sm"
+                          >
+                            Reverter Sorteio
+                          </Button>
+                        )}
+
+                        {(isAdm || isOrg) && (
+                          <>
+                            <Button
+                              onClick={() => navigate(`/torneios/editar/${t.id}`)}
+                              variant="outline"
+                              size="sm"
+                              disabled={t.status === 'encerrado' && !isAdm}
+                            >
+                              Editar
+                            </Button>
+                            <Button
+                              onClick={() => handleDelete(t.id, t.nome)}
+                              variant="destructive"
+                              size="sm"
+                            >
+                              Excluir
+                            </Button>
+                          </>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>
