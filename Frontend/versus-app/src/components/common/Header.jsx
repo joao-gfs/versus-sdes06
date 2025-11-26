@@ -62,7 +62,7 @@ function Header() {
               Organizações
             </NavLink>
 
-            {/* Teams - for ADM, ORG, and TEC */}
+            {/* Teams - for ADM, ORG, TEC */}
             <NavLink to="/equipes" show={hasAnyRole(['ADM', 'ORG', 'TEC'])}>
               Equipes
             </NavLink>
@@ -70,6 +70,11 @@ function Header() {
             {/* Tournaments - for ADM and ORG */}
             <NavLink to="/torneios" show={hasAnyRole(['ADM', 'ORG'])}>
               Torneios
+            </NavLink>
+
+            {/* Athletes - for ADM, ORG, TEC, EMP */}
+            <NavLink to="/atletas" show={hasAnyRole(['ADM', 'ORG', 'TEC', 'EMP'])}>
+              Atletas
             </NavLink>
           </nav>
 
@@ -116,6 +121,10 @@ function Header() {
 
           <NavLink to="/torneios" show={hasAnyRole(['ADM', 'ORG'])}>
             Torneios
+          </NavLink>
+
+          <NavLink to="/atletas" show={hasAnyRole(['ADM', 'ORG', 'TEC', 'EMP'])}>
+            Atletas
           </NavLink>
         </nav>
       </div>
