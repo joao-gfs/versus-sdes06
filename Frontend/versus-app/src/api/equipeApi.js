@@ -118,3 +118,19 @@ export const inscreverEquipeEmTorneio = async (torneioId, equipeId) => {
     throw new Error(error.response?.data?.error || 'Falha ao inscrever equipe em torneio');
   }
 };
+
+/**
+ * Gerencia status de inscrição de equipe em torneio (aprovar/rejeitar)
+ * @param {number} inscricaoId - ID da inscrição (registro torneio_equipe)
+ * @param {string} status - Novo status ('aprovada', 'rejeitada', 'inscrita')
+ * @returns {Promise<object>}
+ */
+export const gerenciarInscricao = async (inscricaoId, status) => {
+  try {
+    const response = await api.put(`/equipes/inscricoes/${inscricaoId}`, { status });
+    return response.data;
+  } catch (error) {
+    console.error('Erro ao gerenciar inscrição:', error.response?.data || error.message);
+    throw new Error(error.response?.data?.error || 'Falha ao gerenciar inscrição');
+  }
+};

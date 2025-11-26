@@ -10,8 +10,12 @@ import EquipesPage from "./pages/EquipesPage";
 import EquipeFormPage from "./pages/EquipeFormPage";
 import TournamentList from "./pages/TournamentList";
 import TournamentForm from "./pages/TournamentForm";
+import TournamentInscricoesPage from "./pages/TournamentInscricoesPage";
 import AtletasPage from "./pages/AtletasPage";
 import AtletaFormPage from "./pages/AtletaFormPage";
+import ChaveamentoPage from "./pages/ChaveamentoPage";
+import PartidasPage from "./pages/PartidasPage";
+import PartidaFormPage from "./pages/PartidaFormPage";
 
 // Componentes de Layout
 import ProtectedRoute from "./components/common/ProtectedRoute"; // O "Gatekeeper"
@@ -128,6 +132,43 @@ function App() {
           element={
             <ProtectedRoute>
               <TournamentForm />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/torneios/:id/chaveamento"
+          element={
+            <ProtectedRoute>
+              <ChaveamentoPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/torneios/:id/inscricoes"
+          element={
+            <ProtectedRoute>
+              <TournamentInscricoesPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Partidas */}
+        <Route
+          path="/partidas"
+          element={
+            <ProtectedRoute>
+              <PartidasPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/partidas/:id/registrar"
+          element={
+            <ProtectedRoute>
+              <PartidaFormPage />
             </ProtectedRoute>
           }
         />

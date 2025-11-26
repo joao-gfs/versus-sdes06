@@ -106,10 +106,88 @@ async function handleDeleteTorneio(req, res) {
   }
 }
 
+async function handleSortearChaveamento(req, res) {
+  try {
+    const torneioId = Number(req.params.id);
+
+    if (!Number.isInteger(torneioId) || torneioId <= 0) {
+      return res.status(400).json({ error: 'ID do Torneio inválido.' });
+    }
+
+    const result = await torneioService.sortearChaveamento(torneioId);
+
+    return res.status(200).json({
+      message: `Chaveamento do torneio ${result.nome} sorteado com sucesso. Status atualizado para 'publicado'.`,
+      partidasGeradas: result.partidasGeradas,
+      torneio: {
+        id: result.id,
+        status: result.status,
+        formato: result.formato
+      }
+    });
+
+  } catch (err) {
+    const code = err.statusCode || 400;
+    return res.status(code).json({ error: err.message });
+  }
+}
+
+// POST /api/torneios/:id/reverter-sorteio - reverte o sorteio de chaveamento
+async function handleReverterSorteio(req, res) {
+  try {
+    const torneioId = Number(req.params.id);
+
+    if (!Number.isInteger(torneioId) || torneioId <= 0) {
+      return res.status(400).json({ error: 'ID do Torneio inválido.' });
+    }
+
+    const roleHeader = (req.headers['x-role'] || '').toString().toUpperCase();
+    const requesterRole = roleHeader || (req.user && req.user.role ? String(req.user.role).toUpperCase() : '');
+    const requesterOrgId = req.headers['x-org-id'] || (req.user && req.user.organizacaoId);
+
+    const result = await torneioService.reverterSorteio(torneioId, requesterRole, requesterOrgId);
+
+    return res.status(200).json({
+      message: 'Sorteio revertido com sucesso. Torneio voltou para status "em configuração".',
+      torneio: result
+    });
+
+  } catch (err) {
+    const code = err.statusCode || 400;
+    return res.status(code).json({ error: err.message });
+  }
+}
+
+// GET /api/torneios/:id/chaveamento - consulta o chaveamento de um torneio
+async function handleConsultarChaveamento(req, res) {
+  try {
+    const torneioId = Number(req.params.id);
+    const { equipe, ordenacao } = req.query;
+
+    if (!Number.isInteger(torneioId) || torneioId <= 0) {
+      return res.status(400).json({ error: 'ID do Torneio inválido.' });
+    }
+
+    const chaveamento = await torneioService.consultarChaveamento(torneioId, {
+      equipe,
+      ordenacao,
+    });
+
+    return res.json(chaveamento);
+
+  } catch (err) {
+    const code = err.statusCode || 400;
+    return res.status(code).json({ error: err.message });
+  }
+}
+
 module.exports = {
   handleCreateTorneio,
   handleListTorneios,
   handleGetTorneioById,
   handleUpdateTorneio,
   handleDeleteTorneio,
+  handleSortearChaveamento,
+  handleReverterSorteio,
+  handleConsultarChaveamento,
 };

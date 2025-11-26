@@ -15,71 +15,74 @@ datasource db {
 
 // Models mapped to your existing SQL tables (names/columns follow your script.sql)
 model Usuario {
-  id        Int              @id @default(autoincrement())
-  nome      String
-  email     String           @unique
-  senhaHash String           @map("senha_hash")
-  status    String           @default("ativo")
-  createdAt DateTime         @default(now()) @map("created_at")
-  updatedAt DateTime         @updatedAt     @map("updated_at")
+  id             Int       @id @default(autoincrement())
+  nome           String
+  email          String    @unique
+  senhaHash      String    @map("senha_hash")
+  status         String    @default("ativo")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
   // failed login attempts and lock timestamp
-  failedAttempts Int        @map("failed_attempts") @default(0)
-  lockedUntil    DateTime?  @map("locked_until")
+  failedAttempts Int       @default(0) @map("failed_attempts")
+  lockedUntil    DateTime? @map("locked_until")
 
-  perfis    PerfilUsuario[]
+  perfis PerfilUsuario[]
 
   @@map("usuario")
 }
 
 model Organizacao {
-  id         Int       @id @default(autoincrement())
-  nome       String    @unique
-  cnpj       String    @unique
+  id          Int      @id @default(autoincrement())
+  nome        String   @unique
+  cnpj        String   @unique
   responsavel String
-  telefone   String? 
-  email      String?
-  endereco   String?   // mapped from TEXT
-  status     String    @default("ativo")
-  createdAt  DateTime  @default(now()) @map("created_at")
-  updatedAt  DateTime  @updatedAt     @map("updated_at")
+  telefone    String?
+  email       String?
+  endereco    String? // mapped from TEXT
+  status      String   @default("ativo")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
 
-  equipes   Equipe[]
-  torneios  Torneio[]
-  perfis    PerfilUsuario[]
+  equipes  Equipe[]
+  torneios Torneio[]
+  perfis   PerfilUsuario[]
 
   @@map("organizacao")
 }
 
 model Equipe {
-  id                   Int         @id @default(autoincrement())
-  nome                 String
-  organizacaoId        Int?        @map("organizacao_id")
-  status               String      @default("ativo")
-  telefone             String?
-  email                String?
-  capacidadeMaxima     Int?        @map("capacidade_maxima")
-  createdAt            DateTime    @default(now()) @map("created_at")
-  updatedAt            DateTime    @updatedAt     @map("updated_at")
+  id               Int      @id @default(autoincrement())
+  nome             String
+  organizacaoId    Int?     @map("organizacao_id")
+  status           String   @default("ativo")
+  telefone         String?
+  email            String?
+  capacidadeMaxima Int?     @map("capacidade_maxima")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
 
-  organizacao Organizacao?  @relation(fields: [organizacaoId], references: [id])
-  atletas      Atleta[]
-  torneios     TorneioEquipe[]
-  perfis       PerfilUsuario[]
+  organizacao      Organizacao?    @relation(fields: [organizacaoId], references: [id])
+  atletas          Atleta[]
+  torneios         TorneioEquipe[]
+  perfis           PerfilUsuario[]
+  partidasComoA    Partida[]       @relation("EquipeA")
+  partidasComoB    Partida[]       @relation("EquipeB")
+  partidasVencidas Partida[]       @relation("Vencedor")
 
   @@map("equipe")
 }
 
 model Atleta {
-  id           Int      @id @default(autoincrement())
-  equipeId     Int      @map("equipe_id")
-  nome         String
+  id             Int      @id @default(autoincrement())
+  equipeId       Int      @map("equipe_id")
+  nome           String
   dataNascimento DateTime @map("data_nascimento")
-  documento    String?  @unique
-  posicao      String?
-  numeroCamisa Int?     @map("numero_camisa")
-  status       String   @default("ativo")
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt     @map("updated_at")
+  documento      String?  @unique
+  posicao        String?
+  numeroCamisa   Int?     @map("numero_camisa")
+  status         String   @default("ativo")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
 
   equipe Equipe @relation(fields: [equipeId], references: [id])
 
@@ -87,32 +90,33 @@ model Atleta {
 }
 
 model Torneio {
-  id            Int       @id @default(autoincrement())
-  organizacaoId Int       @map("organizacao_id")
-  nome          String
-  edicao        String
-  categoria     String?
-  formato       String?
-  criteriosDesempate String? @map("criterios_desempate")
-  capacidadeMaxima Int?    @map("capacidade_maxima")
-  dataInicio    DateTime? @map("data_inicio")
-  dataFim       DateTime? @map("data_fim")
-  status        String   @default("em configuração")
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt     @map("updated_at")
+  id                 Int       @id @default(autoincrement())
+  organizacaoId      Int       @map("organizacao_id")
+  nome               String
+  edicao             String
+  categoria          String?
+  formato            String?
+  criteriosDesempate String?   @map("criterios_desempate")
+  capacidadeMaxima   Int?      @map("capacidade_maxima")
+  dataInicio         DateTime? @map("data_inicio")
+  dataFim            DateTime? @map("data_fim")
+  status             String    @default("em configuração")
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
 
-  organizacao Organizacao @relation(fields: [organizacaoId], references: [id])
+  organizacao Organizacao     @relation(fields: [organizacaoId], references: [id])
   equipes     TorneioEquipe[]
+  partidas    Partida[]
 
   @@unique([nome, edicao, organizacaoId], name: "torneio_unico")
   @@map("torneio")
 }
 
 model TorneioEquipe {
-  id        Int     @id @default(autoincrement())
-  torneioId Int     @map("torneio_id")
-  equipeId  Int     @map("equipe_id")
-  status    String  @default("inscrita")
+  id        Int    @id @default(autoincrement())
+  torneioId Int    @map("torneio_id")
+  equipeId  Int    @map("equipe_id")
+  status    String @default("inscrita")
 
   torneio Torneio @relation(fields: [torneioId], references: [id])
   equipe  Equipe  @relation(fields: [equipeId], references: [id])
@@ -131,10 +135,37 @@ model PerfilUsuario {
   equipeId      Int?     @map("equipe_id")
   createdAt     DateTime @default(now()) @map("created_at")
 
-  usuario      Usuario    @relation(fields: [usuarioId], references: [id])
-  organizacao  Organizacao? @relation(fields: [organizacaoId], references: [id])
-  equipe       Equipe?     @relation(fields: [equipeId], references: [id])
+  usuario     Usuario      @relation(fields: [usuarioId], references: [id])
+  organizacao Organizacao? @relation(fields: [organizacaoId], references: [id])
+  equipe      Equipe?      @relation(fields: [equipeId], references: [id])
 
   @@unique([usuarioId, papel], name: "usuario_papel_unico")
   @@map("perfil_usuario")
+}
+
+model Partida {
+  id          Int       @id @default(autoincrement())
+  torneioId   Int       @map("torneio_id")
+  fase        String    @db.VarChar(50)
+  grupo       String    @db.VarChar(50) // Ex: 'A', 'B', 'Único'
+  ordemNaFase Int       @map("ordem_na_fase")
+  equipeAId   Int?      @map("equipe_a_id")
+  equipeBId   Int?      @map("equipe_b_id")
+  vencedorId  Int?      @map("vencedor_id")
+  placarA     Int?      @map("placar_a")
+  placarB     Int?      @map("placar_b")
+  dataJogo    DateTime? @map("data_jogo") @db.Timestamp(6)
+  localJogo   String?   @map("local_jogo") @db.VarChar(150)
+
+  // Campos adicionados para RFC07
+  status      String  @default("Marcada") // "Marcada", "Concluída", "Cancelada"
+  observacoes String? @db.Text
+
+  torneio  Torneio @relation(fields: [torneioId], references: [id], onDelete: Cascade)
+  equipeA  Equipe? @relation("EquipeA", fields: [equipeAId], references: [id], onDelete: SetNull)
+  equipeB  Equipe? @relation("EquipeB", fields: [equipeBId], references: [id], onDelete: SetNull)
+  vencedor Equipe? @relation("Vencedor", fields: [vencedorId], references: [id], onDelete: SetNull)
+
+  @@unique([torneioId, fase, grupo, ordemNaFase])
+  @@map("partida")
 }

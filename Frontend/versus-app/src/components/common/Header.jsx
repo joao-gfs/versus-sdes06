@@ -25,8 +25,8 @@ function Header() {
       <button
         onClick={() => navigate(to)}
         className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive(to)
-            ? 'bg-versus-yellow text-versus-background'
-            : 'text-versus-grey hover:bg-versus-yellow/10 hover:text-versus-yellow'
+          ? 'bg-versus-yellow text-versus-background'
+          : 'text-versus-grey hover:bg-versus-yellow/10 hover:text-versus-yellow'
           }`}
       >
         {children}
@@ -67,9 +67,14 @@ function Header() {
               Equipes
             </NavLink>
 
-            {/* Tournaments - for ADM and ORG */}
-            <NavLink to="/torneios" show={hasAnyRole(['ADM', 'ORG'])}>
+            {/* Tournaments - for ADM, ORG, TEC */}
+            <NavLink to="/torneios" show={hasAnyRole(['ADM', 'ORG', 'TEC'])}>
               Torneios
+            </NavLink>
+
+            {/* Partidas - for ADM, ORG, TEC */}
+            <NavLink to="/partidas" show={hasAnyRole(['ADM', 'ORG', 'TEC'])}>
+              Partidas
             </NavLink>
 
             {/* Athletes - for ADM, ORG, TEC, EMP */}
@@ -119,8 +124,12 @@ function Header() {
             Equipes
           </NavLink>
 
-          <NavLink to="/torneios" show={hasAnyRole(['ADM', 'ORG'])}>
+          <NavLink to="/torneios" show={hasAnyRole(['ADM', 'ORG', 'TEC'])}>
             Torneios
+          </NavLink>
+
+          <NavLink to="/partidas" show={hasAnyRole(['ADM', 'ORG', 'TEC'])}>
+            Partidas
           </NavLink>
 
           <NavLink to="/atletas" show={hasAnyRole(['ADM', 'ORG', 'TEC', 'EMP'])}>

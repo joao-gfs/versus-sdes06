@@ -20,4 +20,7 @@ router.delete('/:id', equipeController.handleDeleteEquipe);
 // POST /api/equipes/inscrever - inscreve uma equipe em um torneio
 router.post('/inscrever', equipeController.handleInscreverEquipeEmTorneio);
 
+// PUT /api/equipes/inscricoes/:id - gerencia status de inscrição (aprovar/rejeitar)
+router.put('/inscricoes/:id', equipeController.handleGerenciarInscricao);
+
 module.exports = router;

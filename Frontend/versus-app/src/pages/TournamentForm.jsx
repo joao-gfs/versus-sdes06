@@ -20,7 +20,7 @@ function TournamentForm() {
   const { id } = useParams();
   const isEditMode = !!id;
   const navigate = useNavigate();
-  const { user, hasRole } = useAuth();
+  const { user, hasRole, getOrganizacaoId } = useAuth();
 
   const [formData, setFormData] = useState({
     organizacaoId: '',
@@ -44,14 +44,20 @@ function TournamentForm() {
   useEffect(() => {
     if (isAdm) {
       loadOrganizacoes();
-    } else if (user?.organizacaoId) {
-      setFormData(prev => ({ ...prev, organizacaoId: String(user.organizacaoId) }));
+    } else {
+      const orgId = getOrganizacaoId();
+      if (orgId) {
+        setFormData(prev => ({ ...prev, organizacaoId: String(orgId) }));
+      } else {
+        // Se não tem organizacaoId, mostrar erro
+        setError('Seu perfil de usuário não está associado a uma organização. Entre em contato com o administrador.');
+      }
     }
 
     if (isEditMode) {
       loadTorneio();
     }
-  }, [isEditMode, isAdm, user]);
+  }, [isEditMode, isAdm, user, getOrganizacaoId]);
 
   const loadOrganizacoes = async () => {
     try {
@@ -107,9 +113,19 @@ function TournamentForm() {
     setLoading(true);
 
     try {
+      // Validar organizacaoId antes de enviar
+      if (!formData.organizacaoId || formData.organizacaoId === '' || formData.organizacaoId === '0') {
+        throw new Error('A organização é obrigatória. Verifique se você está associado a uma organização.');
+      }
+
+      const orgIdNumber = Number(formData.organizacaoId);
+      if (!Number.isInteger(orgIdNumber) || orgIdNumber <= 0) {
+        throw new Error('ID de organização inválido.');
+      }
+
       const payload = {
         ...formData,
-        organizacaoId: Number(formData.organizacaoId),
+        organizacaoId: orgIdNumber,
         capacidadeMaxima: formData.capacidadeMaxima ? Number(formData.capacidadeMaxima) : undefined,
       };
 

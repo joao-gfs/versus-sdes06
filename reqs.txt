@@ -1,0 +1,123 @@
+[RFC06] Sortear Chaveamento
+Permite gerar automaticamente o chaveamento de um torneio, distribuindo equipes em confrontos de acordo com o formato definido no torneio (liga, fase de grupos, mata-mata ou grupos + mata-mata).
+[RFS06.1] Gerar Chaveamento
+Atores: Organizador (ORG), Administrador (ADM)
+Tabela 18  – Atributos obrigatórios
+Atributo 
+Explicação
+Torneio
+Lista. Selecionar um torneio com status “em configuração” e inscrições finalizadas.
+
+Processo:
+ 
+O Organizador seleciona o torneio e aciona a função de “Gerar Chaveamento”.
+O sistema verifica se:
+O torneio está com status “em configuração”;
+As inscrições estão encerradas;
+Há pelo menos duas equipes aprovadas;
+O sistema realiza o sorteio automaticamente:
+Distribui as equipes conforme o formato do torneio;
+Cria os grupos e confrontos iniciais (quando aplicável);
+Atualiza o status do torneio para “publicado”.
+Regras de Negócio: 
+Cada torneio só pode ter um chaveamento ativo por edição.
+Em caso de erro ou desistência, o organizador pode reverter o sorteio (status volta para “em configuração”).
+O sorteio deve garantir aleatoriedade justa (sem repetição de confrontos no mesmo grupo, exceto em formato Liga).
+Os confrontos são registrados em uma tabela específica (ex.: partida), associada a grupos e fases.
+
+[RFS06.2] Consultar Chaveamento
+Atores: ORG, ADM, TEC
+Tabela 19 – Filtros disponíveis 
+Atributo 
+Explicação
+Torneio
+Selecionar torneio ou edição
+Equipe
+ Texto livre. Buscar equipe participante.
+
+Tabela 20 – Atributos retornados
+Atributo 
+Explicação
+id
+Código único
+Equipes
+Equipes participantes do confronto atual.
+Grupo
+Nome do grupo (A, B, C...) se aplicável.
+Fase
+Nome da fase do torneio (Grupos, Quartas, etc.). Se aplicável
+Equipes no mesmo grupo/fase
+Retorna Equipes que estão no mesmo grupo ou fase do torneio
+
+Ordenação: 
+Padrão: Por fase (ordem lógica do torneio).
+Alternativa: Ordem alfabética pelo nome do grupo
+
+[RFC07] Gerenciar Partidas
+Permite registrar e atualizar os resultados das partidas já existentes em um torneio. As partidas são geradas automaticamente durante o sorteio de chaveamento ([RFC06]) e podem ter seus resultados lançados posteriormente pelo Organizador ou Administrador.
+[RFS07.1] Registrar Resultados das partidas
+Atores: Organizador (ORG), Administrador (ADM)
+Tabela 18  – Atributos obrigatórios
+Atributo 
+Explicação
+Partida
+Selecionar a partida existente (vinculada a um torneio).
+Gols Mandante
+Numero inteiro com número de gols maior que 0 da equipe mandante
+Gols Visitante
+Numero inteiro com número de gols maior que 0 da equipe visitante
+Observações
+Texto opcional para casos que necessitam de observações na partida, como wo, adiamento
+Status da partida
+Lista com status; Concluída / Cancelada / Marcada
+Data da Partida
+Data no formato DD/MM/AAAA
+
+Regras de Negócio: 
+Partidas são criadas automaticamente no sorteio ([RFC06]) e não podem ser criadas manualmente.
+O Organizador ou Administrador pode registrar ou alterar o resultado enquanto o torneio estiver “Publicado”.
+Após o status “Concluída”, somente Administradores podem editar o resultado.
+Não é permitido registrar gols negativos ou empates inválidos em formatos que exigem vencedores (mata-mata, por exemplo).
+
+[RFS07.2] Consultar Partidas
+Atores: ORG, ADM, TEC
+Tabela 19 – Filtros disponíveis 
+Atributo 
+Explicação
+Torneio
+Selecionar torneio ou edição específico
+Equipe
+ Texto livre. Buscar equipe participante.
+Status da partida
+Lista com status; Concluída / Cancelada / Marcada
+Data da partida
+Data no formato DD/MM/AAAA
+
+Tabela 20 – Atributos retornados
+Atributo 
+Explicação
+id
+Código único
+Equipe Mandante
+Equipe mandante da partida
+Gols Mandante
+Número de gols da Equipe mandante na partida
+Equipe Visitante
+Equipe visitante da partida
+Gols visitante
+Número de gols da Equipe visitante na partida
+Status
+Status da Partida (Concluída / Cancelada / Marcada)
+Observações
+Observações registradas (opcional)
+Data da Partida
+Data no formato DD/MM/AAAA
+
+Ordenação: 
+Padrão: Por data da partida
+Regras de Negócio: 
+Técnicos (TEC) só visualizam partidas dos torneios em que suas equipes estão inscritas.
+Organizadores (ORG) visualizam todas as partidas de torneios de sua organização.
+Administradores (ADM) podem visualizar partidas de qualquer torneio.
+Partidas concluídas exibem o resultado; partidas agendadas exibem as equipes e a Data.
+

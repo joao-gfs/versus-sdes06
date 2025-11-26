@@ -36,10 +36,10 @@ function AtletasPage() {
     setLoading(true); setError(null);
     try {
       const filters = { order: ordenacao };
-      if (filtroEquipeId) filters.equipeId = filtroEquipeId;
-      if (filtroTorneioId) filters.torneioId = filtroTorneioId;
+      if (filtroEquipeId && filtroEquipeId !== 'ALL') filters.equipeId = filtroEquipeId;
+      if (filtroTorneioId && filtroTorneioId !== 'ALL') filters.torneioId = filtroTorneioId;
       if (filtroNome) filters.nome = filtroNome;
-      if (filtroPosicao) filters.posicao = filtroPosicao;
+      if (filtroPosicao && filtroPosicao !== 'ALL') filters.posicao = filtroPosicao;
       const list = await listAtletas(filters);
       setAtletas(list);
     } catch (err) {
@@ -117,7 +117,7 @@ function AtletasPage() {
             <Select value={filtroPosicao} onValueChange={setFiltroPosicao}>
               <SelectTrigger id="fPosicao"><SelectValue placeholder="Todas" /></SelectTrigger>
               <SelectContent className="bg-background">
-                <SelectItem value="">Todas</SelectItem>
+                <SelectItem value="ALL">Todas</SelectItem>
                 {POSICOES.map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}
               </SelectContent>
             </Select>
@@ -127,7 +127,7 @@ function AtletasPage() {
             <Select value={filtroEquipeId} onValueChange={setFiltroEquipeId}>
               <SelectTrigger id="fEquipe"><SelectValue placeholder="Todas" /></SelectTrigger>
               <SelectContent className="bg-background">
-                <SelectItem value="">Todas</SelectItem>
+                <SelectItem value="ALL">Todas</SelectItem>
                 {equipes.map(eq => (
                   <SelectItem key={eq.id} value={String(eq.id)}>{eq.nome}</SelectItem>
                 ))}
@@ -139,7 +139,7 @@ function AtletasPage() {
             <Select value={filtroTorneioId} onValueChange={setFiltroTorneioId}>
               <SelectTrigger id="fTorneio"><SelectValue placeholder="Todos" /></SelectTrigger>
               <SelectContent className="bg-background">
-                <SelectItem value="">Todos</SelectItem>
+                <SelectItem value="ALL">Todos</SelectItem>
                 {torneios.map(t => (
                   <SelectItem key={t.id} value={String(t.id)}>{t.nome} - {t.edicao}</SelectItem>
                 ))}
@@ -160,7 +160,7 @@ function AtletasPage() {
         </div>
         <div className="mt-4">
           <Button variant="outline" size="sm" onClick={() => {
-            setFiltroNome(''); setFiltroPosicao(''); setFiltroEquipeId(''); setFiltroTorneioId(''); setOrdenacao('nome');
+            setFiltroNome(''); setFiltroPosicao('ALL'); setFiltroEquipeId('ALL'); setFiltroTorneioId('ALL'); setOrdenacao('nome');
           }}>Limpar Filtros</Button>
         </div>
       </div>

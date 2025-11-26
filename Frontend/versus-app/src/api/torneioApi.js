@@ -144,3 +144,79 @@ export const deleteTorneio = async (id, role = '', orgId = null) => {
     throw new Error(error.response?.data?.error || 'Falha ao excluir torneio');
   }
 };
+
+/**
+ * Sorteia o chaveamento de um torneio
+ * @param {number} id - ID do torneio
+ * @param {string} role - papel do usuário
+ * @param {number} orgId - ID da organização do usuário
+ * @returns {Promise<object>}
+ */
+export const sortearChaveamento = async (id, role = '', orgId = null) => {
+  try {
+    const config = {
+      headers: {},
+    };
+
+    if (role) {
+      config.headers['x-role'] = role;
+    }
+    if (orgId) {
+      config.headers['x-org-id'] = orgId;
+    }
+
+    const response = await api.post(`/torneios/${id}/sorteio`, {}, config);
+    return response.data;
+  } catch (error) {
+    console.error('Erro ao sortear chaveamento:', error.response?.data || error.message);
+    throw new Error(error.response?.data?.error || 'Falha ao sortear chaveamento');
+  }
+};
+
+/**
+ * Reverte o sorteio de chaveamento de um torneio
+ * @param {number} id - ID do torneio
+ * @param {string} role - papel do usuário
+ * @param {number} orgId - ID da organização do usuário
+ * @returns {Promise<object>}
+ */
+export const reverterSorteio = async (id, role = '', orgId = null) => {
+  try {
+    const config = {
+      headers: {},
+    };
+
+    if (role) {
+      config.headers['x-role'] = role;
+    }
+    if (orgId) {
+      config.headers['x-org-id'] = orgId;
+    }
+
+    const response = await api.post(`/torneios/${id}/reverter-sorteio`, {}, config);
+    return response.data;
+  } catch (error) {
+    console.error('Erro ao reverter sorteio:', error.response?.data || error.message);
+    throw new Error(error.response?.data?.error || 'Falha ao reverter sorteio');
+  }
+};
+
+/**
+ * Consulta o chaveamento de um torneio
+ * @param {number} id - ID do torneio
+ * @param {object} filters - { equipe, ordenacao }
+ * @returns {Promise<object>}
+ */
+export const consultarChaveamento = async (id, filters = {}) => {
+  try {
+    const params = {};
+    if (filters.equipe) params.equipe = filters.equipe;
+    if (filters.ordenacao) params.ordenacao = filters.ordenacao;
+
+    const response = await api.get(`/torneios/${id}/chaveamento`, { params });
+    return response.data;
+  } catch (error) {
+    console.error('Erro ao consultar chaveamento:', error.response?.data || error.message);
+    throw new Error(error.response?.data?.error || 'Falha ao consultar chaveamento');
+  }
+};
