@@ -67,17 +67,14 @@ function RelatoriosPage() {
     if (!metrics) return [];
     
     return [
-      { label: 'Usuários', value: metrics.totalUsuarios || 0 },
-      { label: 'Organizações', value: metrics.totalOrganizacoes || 0 },
-      { label: 'Torneios', value: metrics.totalTorneios || 0 },
-      { label: 'Torneios em Configuração', value: metrics.torneiosEmConfiguracao || 0 },
-      { label: 'Torneios Publicados', value: metrics.torneiosPublicados || 0 },
-      { label: 'Torneios Encerrados', value: metrics.torneiosEncerrados || 0 },
-      { label: 'Equipes', value: metrics.totalEquipes || 0 },
-      { label: 'Atletas', value: metrics.totalAtletas || 0 },
-      { label: 'Partidas', value: metrics.totalPartidas || 0 },
-      { label: 'Partidas Pendentes', value: metrics.partidasPendentes || 0 },
-      { label: 'Partidas Encerradas', value: metrics.partidasEncerradas || 0 },
+      { label: 'Usuários', value: metrics.usuarios || 0 },
+      { label: 'Organizações Ativas', value: metrics.organizacoesAtivas || 0 },
+      { label: 'Torneios', value: metrics.torneios || 0 },
+      { label: 'Equipes', value: metrics.equipes || 0 },
+      { label: 'Atletas', value: metrics.atletas || 0 },
+      { label: 'Partidas (Total)', value: metrics.partidas?.total || 0 },
+      { label: 'Partidas Pendentes', value: metrics.partidas?.pendentes || 0 },
+      { label: 'Partidas Concluídas', value: metrics.partidas?.concluidas || 0 },
     ];
   };
 
@@ -157,7 +154,7 @@ function RelatoriosPage() {
               <div>
                 <p className="text-sm text-muted-foreground">Usuários</p>
                 <p className="text-3xl font-bold text-versus-yellow">
-                  {metrics.totalUsuarios || 0}
+                  {metrics.usuarios || 0}
                 </p>
               </div>
               <div className="text-4xl">👥</div>
@@ -170,7 +167,7 @@ function RelatoriosPage() {
               <div>
                 <p className="text-sm text-muted-foreground">Torneios</p>
                 <p className="text-3xl font-bold text-versus-yellow">
-                  {metrics.totalTorneios || 0}
+                  {metrics.torneios || 0}
                 </p>
               </div>
               <div className="text-4xl">🏆</div>
@@ -183,7 +180,7 @@ function RelatoriosPage() {
               <div>
                 <p className="text-sm text-muted-foreground">Equipes</p>
                 <p className="text-3xl font-bold text-versus-yellow">
-                  {metrics.totalEquipes || 0}
+                  {metrics.equipes || 0}
                 </p>
               </div>
               <div className="text-4xl">⚽</div>
@@ -196,7 +193,7 @@ function RelatoriosPage() {
               <div>
                 <p className="text-sm text-muted-foreground">Partidas</p>
                 <p className="text-3xl font-bold text-versus-yellow">
-                  {metrics.totalPartidas || 0}
+                  {metrics.partidas?.total || 0}
                 </p>
               </div>
               <div className="text-4xl">📊</div>
