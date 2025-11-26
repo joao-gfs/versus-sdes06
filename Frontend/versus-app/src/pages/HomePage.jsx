@@ -77,6 +77,31 @@ function HomePage() {
             </CardFooter>
           </Card>
         )}
+
+        {/* Card de Relatórios - acessível para todos */}
+        <Card className="max-w-xl">
+          <CardHeader>
+            <CardTitle>Relatórios e Métricas</CardTitle>
+            <CardDescription>
+              Visualize estatísticas e dados do sistema
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">
+              Acesse relatórios consolidados com métricas de usuários, torneios, 
+              equipes, atletas e partidas. Exporte dados em formato CSV.
+            </p>
+          </CardContent>
+          <CardFooter>
+            <Button 
+              variant="default" 
+              size="sm"
+              onClick={() => navigate('/relatorios')}
+            >
+              📊 Ver Relatórios
+            </Button>
+          </CardFooter>
+        </Card>
       </div>
     </>
   );

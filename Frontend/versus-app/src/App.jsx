@@ -16,6 +16,7 @@ import AtletaFormPage from "./pages/AtletaFormPage";
 import ChaveamentoPage from "./pages/ChaveamentoPage";
 import PartidasPage from "./pages/PartidasPage";
 import PartidaFormPage from "./pages/PartidaFormPage";
+import RelatoriosPage from "./pages/RelatoriosPage";
 
 // Componentes de Layout
 import ProtectedRoute from "./components/common/ProtectedRoute"; // O "Gatekeeper"
@@ -197,6 +198,16 @@ function App() {
           element={
             <ProtectedRoute>
               <AtletaFormPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Relatórios */}
+        <Route
+          path="/relatorios"
+          element={
+            <ProtectedRoute>
+              <RelatoriosPage />
             </ProtectedRoute>
           }
         />
