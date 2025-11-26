@@ -55,11 +55,12 @@ class CreateOrganizationTest(unittest.TestCase):
         """Helper method to log in as ADM before testing organization creation."""
         self.driver.get(f"{BASE_URL}/login")
         
+        # Login with admin credentials from users.txt
         username_field = self.wait.until(EC.visibility_of_element_located((By.ID, "email")))
-        username_field.send_keys("joao.org@example.com")
+        username_field.send_keys("admin@versus.com")
         
         password_field = self.wait.until(EC.visibility_of_element_located((By.ID, "password")))
-        password_field.send_keys("Org123456")
+        password_field.send_keys("Senha123")
         
         submit_button = self.wait.until(EC.element_to_be_clickable((By.ID, "login-button")))
         submit_button.click()

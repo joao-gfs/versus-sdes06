@@ -43,10 +43,10 @@ class LogInTest(unittest.TestCase):
         try:
             # 2. Find and fill fields with invalid data
             username_field = self.wait.until(EC.visibility_of_element_located((By.ID, "email")))
-            username_field.send_keys("joao.org@example.com")
+            username_field.send_keys("invalid@example.com")  # Non-existent user
             
             password_field = self.wait.until(EC.visibility_of_element_located((By.ID, "password")))
-            password_field.send_keys("WrongPassword123") # Invalid password
+            password_field.send_keys("WrongPassword123")  # Invalid password
             
             # 3. Find and click the submit button
             submit_button = self.wait.until(EC.element_to_be_clickable((By.ID, "login-button")))
@@ -77,12 +77,13 @@ class LogInTest(unittest.TestCase):
         try:
             # 2. Find the username field and type the username
             # We wait until the element is visible before interacting
+            # Using valid credentials from users.txt (Admin user)
             username_field = self.wait.until(EC.visibility_of_element_located((By.ID, "email")))
-            username_field.send_keys("joao.org@example.com")
+            username_field.send_keys("admin@versus.com")
             
             # 3. Find the password field and type the password
             password_field = self.wait.until(EC.visibility_of_element_located((By.ID, "password")))
-            password_field.send_keys("Org123456")
+            password_field.send_keys("Senha123")
             
             # 4. Find and click the submit button
             submit_button = self.wait.until(EC.element_to_be_clickable((By.ID, "login-button")))
