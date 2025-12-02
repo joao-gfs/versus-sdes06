@@ -1,5 +1,20 @@
 import api from './axiosConfig';
 
+// API de Relatórios
+// - GET /relatorio/dashboard: métricas agregadas para gráficos (ADM)
+// - GET /relatorio/metrics: contagens gerais (ADM)
+// - GET /relatorio/metrics/csv: exportação CSV (ADM)
+
+export const getDashboardMetrics = async () => {
+  try {
+    const res = await api.get('/relatorio/dashboard');
+    return res.data;
+  } catch (error) {
+    console.error('Erro ao obter métricas de relatório:', error.response?.data || error.message);
+    throw new Error(error.response?.data?.error || 'Falha ao carregar relatório');
+  }
+};
+
 /**
  * Obtém as métricas do sistema (contagens)
  * @returns {Promise<object>} Objeto com as contagens de usuários, organizações, torneios, etc.

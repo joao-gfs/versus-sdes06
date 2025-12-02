@@ -17,7 +17,6 @@ function AtletasPage() {
   const navigate = useNavigate();
   const { hasAnyRole, getEquipeId, hasRole } = useAuth();
 
-  // data
   const [atletas, setAtletas] = useState([]);
   const [equipes, setEquipes] = useState([]);
   const [torneios, setTorneios] = useState([]);
@@ -25,12 +24,11 @@ function AtletasPage() {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
 
-  // filters
   const [filtroEquipeId, setFiltroEquipeId] = useState('');
   const [filtroTorneioId, setFiltroTorneioId] = useState('');
   const [filtroNome, setFiltroNome] = useState('');
   const [filtroPosicao, setFiltroPosicao] = useState('');
-  const [ordenacao, setOrdenacao] = useState('nome'); // nome|equipe|torneio
+  const [ordenacao, setOrdenacao] = useState('nome');
 
   const loadData = async () => {
     setLoading(true); setError(null);
@@ -58,7 +56,6 @@ function AtletasPage() {
       setEquipes(eqs);
       setTorneios(tors);
     } catch (err) {
-      // silencioso
     }
   };
 
@@ -74,7 +71,6 @@ function AtletasPage() {
     loadData();
   }, [filtroEquipeId, filtroTorneioId, filtroNome, filtroPosicao, ordenacao]);
 
-  // se TEC, travar filtroEquipeId para sua equipe
   useEffect(() => {
     const tecEquipeId = getEquipeId();
     if (tecEquipeId) setFiltroEquipeId(String(tecEquipeId));

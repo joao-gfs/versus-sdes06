@@ -30,7 +30,7 @@ function BarChart({ data = [], labelKey = 'label', valueKey = 'value', title }) 
   );
 }
 
-function RelatoriosPage() {
+function RelatorioPage() {
   const { hasRole } = useAuth();
   const navigate = useNavigate();
   const [metrics, setMetrics] = useState(null);
@@ -81,7 +81,7 @@ function RelatoriosPage() {
       {!metrics ? (
         <div className="p-8 text-center text-muted-foreground">Carregando métricas...</div>
       ) : (
-        <div className="grid grid-cols-1 md-grid-cols-2 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <BarChart title="Novos atletas por mês (últimos 6)" data={athletesData} />
           <BarChart title="Torneios por mês (últimos 6)" data={tournamentsData} />
           <Card className="p-6">
@@ -96,5 +96,4 @@ function RelatoriosPage() {
   );
 }
 
-export default RelatoriosPage;
-
+export default RelatorioPage;
