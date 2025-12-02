@@ -94,12 +94,47 @@ const getDashboardMetrics = async (requester = {}) => {
     else posCounts[p]++;
   }
 
+  // Partidas por mês (últimos 6 meses)
+  const partidasRecentes = await prisma.partida.findMany({
+    where: {
+      dataJogo: { gte: fromDate },
+    },
+    select: { id: true, dataJogo: true },
+  });
+
+  const partidasPorMes = Object.fromEntries(months.map(m => [m, 0]));
+  for (const p of partidasRecentes) {
+    if (p.dataJogo) {
+      const key = getMonthKey(p.dataJogo);
+      if (key in partidasPorMes) partidasPorMes[key]++;
+    }
+  }
+
+  // Ranking de participação de equipes em torneios (top 10)
+  const equipesComTorneios = await prisma.equipe.findMany({
+    select: {
+      id: true,
+      nome: true,
+      torneios: {
+        select: { id: true },
+      },
+    },
+  });
+
+  const equipesRanking = equipesComTorneios
+    .map(e => ({ nome: e.nome, count: e.torneios.length }))
+    .filter(e => e.count > 0)
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 10);
+
   return {
     months,
     newAthletesByMonth: months.map(m => ({ month: m, count: atletasPorMes[m] })),
     tournamentsByMonth: months.map(m => ({ month: m, count: torneiosPorMes[m] })),
     totalAthletesEnrolled: atletasInscritos,
     positionsDistribution: Object.entries(posCounts).map(([pos, count]) => ({ pos, count })),
+    matchesByMonth: months.map(m => ({ month: m, count: partidasPorMes[m] })),
+    teamParticipationRanking: equipesRanking,
   };
 };
 
