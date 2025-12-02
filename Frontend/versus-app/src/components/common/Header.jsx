@@ -81,6 +81,11 @@ function Header() {
             <NavLink to="/atletas" show={hasAnyRole(['ADM', 'ORG', 'TEC', 'EMP'])}>
               Atletas
             </NavLink>
+
+            {/* Reports - only ADM */}
+            <NavLink to="/relatorios" show={hasRole('ADM')}>
+              Relatórios
+            </NavLink>
           </nav>
 
           {/* User Info & Logout */}
@@ -134,6 +139,10 @@ function Header() {
 
           <NavLink to="/atletas" show={hasAnyRole(['ADM', 'ORG', 'TEC', 'EMP'])}>
             Atletas
+          </NavLink>
+
+          <NavLink to="/relatorios" show={hasRole('ADM')}>
+            Relatórios
           </NavLink>
         </nav>
       </div>

@@ -30,7 +30,7 @@ function BarChart({ data = [], labelKey = 'label', valueKey = 'value', title }) 
   );
 }
 
-function RelatoriosPage() {
+function RelatorioPage() {
   const { hasRole } = useAuth();
   const navigate = useNavigate();
   const [metrics, setMetrics] = useState(null);
@@ -47,6 +47,7 @@ function RelatoriosPage() {
       setError(null);
       try {
         const m = await getDashboardMetrics();
+        console.log('Métricas recebidas:', m);
         setMetrics(m);
       } catch (err) {
         setError(err.message || 'Falha ao carregar relatório');
@@ -63,6 +64,11 @@ function RelatoriosPage() {
   const athletesData = (metrics?.newAthletesByMonth || []).map(x => ({ label: monthLabel(x.month), value: x.count }));
   const tournamentsData = (metrics?.tournamentsByMonth || []).map(x => ({ label: monthLabel(x.month), value: x.count }));
   const positionsData = (metrics?.positionsDistribution || []).map(x => ({ label: x.pos, value: x.count }));
+  const matchesData = (metrics?.matchesByMonth || []).map(x => ({ label: monthLabel(x.month), value: x.count }));
+  const teamRankingData = (metrics?.teamParticipationRanking || []).map(x => ({ label: x.nome, value: x.count }));
+
+  console.log('matchesData:', matchesData);
+  console.log('teamRankingData:', teamRankingData);
 
   return (
     <div className="space-y-6">
@@ -81,9 +87,11 @@ function RelatoriosPage() {
       {!metrics ? (
         <div className="p-8 text-center text-muted-foreground">Carregando métricas...</div>
       ) : (
-        <div className="grid grid-cols-1 md-grid-cols-2 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <BarChart title="Novos atletas por mês (últimos 6)" data={athletesData} />
           <BarChart title="Torneios por mês (últimos 6)" data={tournamentsData} />
+          <BarChart title="Partidas por mês (últimos 6)" data={matchesData} />
+          <BarChart title="Ranking de participação em torneios (top 10)" data={teamRankingData} labelKey="label" valueKey="value" />
           <Card className="p-6">
             <div className="text-sm font-semibold mb-2">Total de atletas inscritos</div>
             <div className="text-3xl font-bold text-versus-yellow">{metrics.totalAthletesEnrolled}</div>
@@ -96,5 +104,4 @@ function RelatoriosPage() {
   );
 }
 
-export default RelatoriosPage;
-
+export default RelatorioPage;

@@ -99,7 +99,8 @@ async function validarIdadeVsCategorias(equipeId, dataNascimento) {
 
 /**
  * Cadastrar atleta
- * payload: { equipeId, nome, dataNascimento (DD/MM/AAAA), documento (CPF), posicao, numeroCamisa, telefone }
+ * Atores: ORG, TEC, EMP, ADM
+ * payload: { equipeId, nome, dataNascimento (DD/MM/AAAA), documento (CPF), posicao, numeroCamisa }
  * Regras:
  * - Equipe obrigatória e existente
  * - Nome obrigatório
@@ -108,6 +109,7 @@ async function validarIdadeVsCategorias(equipeId, dataNascimento) {
  * - Posição deve ser uma das POSICOES_VALIDAS
  * - Número camisa inteiro 1..99
  * - Idade deve respeitar categorias dos torneios em que a equipe está inscrita
+ * - TEC só pode cadastrar na própria equipe; ORG na própria organização
  */
 const createAtleta = async (payload = {}, requester = {}) => {
   const equipeId = payload.equipeId ? Number(payload.equipeId) : null;
@@ -191,10 +193,10 @@ const createAtleta = async (payload = {}, requester = {}) => {
 
 /**
  * Consultar atletas
+ * Atores: Todos
  * filters: { equipeId?, torneioId?, nome?, posicao?, order? }
  * Regras:
  * - TEC vê apenas atletas da sua equipe
- * - ADM vê todos
  * - Ordenação padrão: nome asc | alternativa: equipe | torneio
  */
 const listAtletas = async (filters = {}, requester = {}) => {
@@ -284,7 +286,10 @@ const listAtletas = async (filters = {}, requester = {}) => {
   return result;
 };
 
-/** Obter atleta por ID */
+/**
+ * Obter atleta por ID
+ * Atores: Todos (TEC restrito à própria equipe)
+ */
 const getAtletaById = async (id, requester = {}) => {
   const atleta = await prisma.atleta.findUnique({
     where: { id: Number(id) },
@@ -329,7 +334,8 @@ const getAtletaById = async (id, requester = {}) => {
 
 /**
  * Atualizar atleta
- * Campos editáveis: nome, posicao, equipeId, numeroCamisa, status, telefone
+ * Atores: TEC, ADM
+ * Campos editáveis: nome, posicao, equipeId, numeroCamisa, status
  * Não permitir alteração de CPF (documento) nem dataNascimento.
  */
 const updateAtleta = async (id, payload = {}, requester = {}) => {
@@ -420,7 +426,9 @@ const updateAtleta = async (id, payload = {}, requester = {}) => {
 
 /**
  * Excluir atleta
- * - Se equipe está inscrita em torneio publicado -> inativar apenas
+ * Atores: TEC, ADM
+ * Regras:
+ * - Se equipe está inscrita em torneio publicado -> inativar apenas (status = inativo)
  */
 const deleteAtleta = async (id, requester = {}) => {
   // Permissões: TEC, ADM
